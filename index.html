@@ -1,41 +1,164 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SquachAcers vs Aliens</title>
+    <title>SquachAcers: Invasion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        canvas { background: #1a1a1a; display: block; margin: 0 auto; border: 2px solid #4CAF50; }
-        body { background: #000; color: white; text-align: center; font-family: Arial; }
+        body { background: #050a05; color: #4CAF50; text-align: center; font-family: 'Courier New', Courier, monospace; margin: 0; overflow: hidden; touch-action: none; }
+        canvas { background: linear-gradient(#001100, #052205); display: block; margin: 0 auto; border-bottom: 10px solid #2E7D32; cursor: crosshair; width: 100vw; height: 80vh; }
+        .stats { padding: 10px; font-size: 24px; background: #000; display: flex; justify-content: space-around; border-bottom: 2px solid #2E7D32; }
+        .msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 30px; display: none; background: rgba(0,0,0,0.8); padding: 20px; border: 2px solid #FF5252; }
     </style>
 </head>
 <body>
-    <h1>SQUACHACERS: THE INVASION</h1>
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
-    <p>Use Arrow Keys to Move | Space to "Slam" (Swing Racket)</p>
+    <div class="stats">
+        <div>SCORE: <span id="score">0</span></div>
+        <div>TREES LEFT: <span id="health">5</span></div>
+    </div>
+    <div id="gameOver" class="msg">FOREST OVERRUN!<br><button onclick="location.reload()">RETRY ACER</button></div>
+    <canvas id="gameCanvas"></canvas>
+    <p>TAP TO HURL STONES | PROTECT THE TREE LINE</p>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
+        const scoreEl = document.getElementById("score");
+        const healthEl = document.getElementById("health");
+        const gameOverEl = document.getElementById("gameOver");
 
-        let squach = { x: 50, y: 200, size: 40, color: "#2E7D32" };
-        let alien = { x: 700, y: 200, size: 30, color: "#FF5252", speed: 2 };
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight * 0.8;
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw Squach (The Hero)
-            ctx.fillStyle = squach.color;
-            ctx.fillRect(squach.x, squach.y, squach.size, squach.size);
+        let score = 0;
+        let health = 5;
+        let gameActive = true;
+        let stones = [];
+        let invaders = [];
+        let particles = [];
 
-            // Draw Alien
-            ctx.fillStyle = alien.color;
-            ctx.fillRect(alien.x, alien.y, alien.size, alien.size);
-
-            // Simple Alien AI (Move toward Squach)
-            if (alien.x > squach.x) alien.x -= alien.speed;
-            
-            requestAnimationFrame(draw);
+        class Stone {
+            constructor(x, y, targetX, targetY) {
+                this.x = x;
+                this.y = y;
+                let angle = Math.atan2(targetY - y, targetX - x);
+                this.speed = 8;
+                this.vx = Math.cos(angle) * this.speed;
+                this.vy = Math.sin(angle) * this.speed;
+                this.size = 8;
+            }
+            update() { this.x += this.vx; this.y += this.vy; }
+            draw() {
+                ctx.fillStyle = "#888";
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fill();
+                // Trail effect
+                ctx.strokeStyle = "rgba(136,136,136,0.3)";
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x - this.vx*2, this.y - this.vy*2);
+                ctx.stroke();
+            }
         }
-        draw();
+
+        class Invader {
+            constructor() {
+                this.x = Math.random() * (canvas.width - 40) + 20;
+                this.y = -50;
+                this.size = 40;
+                this.speed = 1.5 + (score / 10);
+                this.color = `hsl(${Math.random() * 60 + 280}, 100%, 60%)`; // Alien Purple/Pink
+            }
+            update() { this.y += this.speed; }
+            draw() {
+                ctx.fillStyle = this.color;
+                // Draw Saucer Shape
+                ctx.beginPath();
+                ctx.ellipse(this.x, this.y, this.size/2, this.size/4, 0, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = "#00FFFF"; // Cockpit
+                ctx.beginPath();
+                ctx.arc(this.x, this.y - 5, 8, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+
+        function spawnInvader() {
+            if (gameActive) invaders.push(new Invader());
+            setTimeout(spawnInvader, Math.max(500, 2000 - (score * 50)));
+        }
+
+        function explode(x, y, color) {
+            for(let i=0; i<8; i++) {
+                particles.push({x, y, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, life: 20, color});
+            }
+        }
+
+        function update() {
+            if (!gameActive) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update Stones
+            stones.forEach((s, si) => {
+                s.update();
+                s.draw();
+                if (s.y > canvas.height || s.x < 0 || s.x > canvas.width) stones.splice(si, 1);
+            });
+
+            // Update Invaders
+            invaders.forEach((inv, ii) => {
+                inv.update();
+                inv.draw();
+
+                // Check Stone Collision
+                stones.forEach((s, si) => {
+                    let dist = Math.hypot(s.x - inv.x, s.y - inv.y);
+                    if (dist < inv.size/2 + s.size) {
+                        explode(inv.x, inv.y, inv.color);
+                        invaders.splice(ii, 1);
+                        stones.splice(si, 1);
+                        score++;
+                        scoreEl.innerText = score;
+                    }
+                });
+
+                // Hit Tree Line
+                if (inv.y > canvas.height) {
+                    invaders.splice(ii, 1);
+                    health--;
+                    healthEl.innerText = health;
+                    canvas.style.borderColor = "#FF5252";
+                    setTimeout(()=> canvas.style.borderColor = "#2E7D32", 200);
+                    if (health <= 0) {
+                        gameActive = false;
+                        gameOverEl.style.display = "block";
+                    }
+                }
+            });
+
+            // Update Particles
+            particles.forEach((p, pi) => {
+                p.x += p.vx; p.y += p.vy; p.life--;
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life/20;
+                ctx.fillRect(p.x, p.y, 4, 4);
+                ctx.globalAlpha = 1;
+                if (p.life <= 0) particles.splice(pi, 1);
+            });
+
+            requestAnimationFrame(update);
+        }
+
+        canvas.addEventListener("touchstart", (e) => {
+            let touch = e.touches[0];
+            stones.push(new Stone(canvas.width/2, 20, touch.clientX, touch.clientY));
+        });
+        
+        canvas.addEventListener("mousedown", (e) => {
+            stones.push(new Stone(canvas.width/2, 20, e.clientX, e.clientY));
+        });
+
+        spawnInvader();
+        update();
     </script>
 </body>
 </html>
