@@ -7,332 +7,97 @@
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --gold: #C9A84C;
-    --gold-bright: #FFD700;
-    --dark: #0a0a14;
-    --deep: #050510;
-    --green: #1a3a1a;
-    --alien: #7fff7f;
-    --alien-dark: #00aa44;
-    --red: #ff3333;
-    --sky: #0d1a3a;
+    --gold: #C9A84C; --gold-bright: #FFD700; --dark: #0a0a14; --deep: #050510;
+    --green: #1a3a1a; --alien: #7fff7f; --alien-dark: #00aa44; --red: #ff3333; --sky: #0d1a3a;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--deep);
-    font-family: 'Exo 2', sans-serif;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    width: 100vw;
-    user-select: none;
-    touch-action: none;
-  }
-
-  #gameContainer {
-    position: relative;
-    width: min(500px, 100vw);
-    height: min(700px, 100vh);
-    overflow: hidden;
-  }
-
-  canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-    cursor: crosshair;
-  }
-
-  #hud {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 16px 8px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
-    pointer-events: none;
-    z-index: 10;
-  }
-
+  body { background: var(--deep); font-family: 'Exo 2', sans-serif; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; user-select: none; touch-action: none; }
+  #gameContainer { position: relative; width: min(500px, 100vw); height: min(700px, 100vh); overflow: hidden; }
+  canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+  #hud { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 16px 8px; background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); pointer-events: none; z-index: 10; }
   .hud-block { display: flex; flex-direction: column; align-items: center; }
   .hud-label { font-family: 'Black Ops One', cursive; font-size: 9px; letter-spacing: 2px; color: var(--gold); opacity: 0.8; }
   .hud-value { font-family: 'Black Ops One', cursive; font-size: 22px; color: #fff; text-shadow: 0 0 10px var(--gold); }
   .hud-value.wave { color: var(--gold-bright); font-size: 18px; }
-
   #treesRow { display: flex; gap: 5px; align-items: center; }
-
   .tree-icon { font-size: 18px; transition: opacity 0.3s; filter: drop-shadow(0 0 4px #0f0); }
   .tree-icon.dead { opacity: 0.15; filter: none; }
-
-  .screen {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 20;
-    padding: 20px;
-    text-align: center;
-  }
-
+  .screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; padding: 20px; text-align: center; }
   #startScreen { background: radial-gradient(ellipse at center, #0d1a3a 0%, #050510 100%); }
   #gameOverScreen { background: rgba(5,5,16,0.95); display: none; }
   #levelScreen { background: rgba(5,5,16,0.97); display: none; }
-
-  .logo {
-    font-family: 'Black Ops One', cursive;
-    font-size: 38px;
-    color: var(--gold-bright);
-    text-shadow: 0 0 30px var(--gold), 0 0 60px rgba(201,168,76,0.3);
-    letter-spacing: 3px;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  .subtitle {
-    font-family: 'Black Ops One', cursive;
-    font-size: 14px;
-    color: #aaa;
-    letter-spacing: 6px;
-    margin-bottom: 30px;
-  }
-
-  .bigfoot-art {
-    font-size: 80px;
-    margin: 10px 0;
-    animation: breathe 3s ease-in-out infinite;
-    filter: drop-shadow(0 0 20px rgba(201,168,76,0.5));
-  }
-
-  @keyframes breathe {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.06); }
-  }
-
-  .game-desc {
-    font-size: 13px;
-    color: #888;
-    letter-spacing: 1px;
-    margin-bottom: 28px;
-    line-height: 1.6;
-  }
-
-  .btn {
-    font-family: 'Black Ops One', cursive;
-    font-size: 16px;
-    letter-spacing: 3px;
-    padding: 14px 40px;
-    border: 2px solid var(--gold);
-    background: transparent;
-    color: var(--gold-bright);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--gold);
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
+  .logo { font-family: 'Black Ops One', cursive; font-size: 38px; color: var(--gold-bright); text-shadow: 0 0 30px var(--gold), 0 0 60px rgba(201,168,76,0.3); letter-spacing: 3px; line-height: 1; margin-bottom: 4px; }
+  .subtitle { font-family: 'Black Ops One', cursive; font-size: 14px; color: #aaa; letter-spacing: 6px; margin-bottom: 30px; }
+  .bigfoot-art { font-size: 80px; margin: 10px 0; animation: breathe 3s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(201,168,76,0.5)); }
+  @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  .game-desc { font-size: 13px; color: #888; letter-spacing: 1px; margin-bottom: 28px; line-height: 1.6; }
+  .btn { font-family: 'Black Ops One', cursive; font-size: 16px; letter-spacing: 3px; padding: 14px 40px; border: 2px solid var(--gold); background: transparent; color: var(--gold-bright); cursor: pointer; transition: all 0.2s; text-transform: uppercase; position: relative; overflow: hidden; }
+  .btn::before { content: ''; position: absolute; inset: 0; background: var(--gold); opacity: 0; transition: opacity 0.2s; }
   .btn:hover::before { opacity: 0.15; }
   .btn:active { transform: scale(0.96); }
-
-  .over-title {
-    font-family: 'Black Ops One', cursive;
-    font-size: 42px;
-    color: var(--red);
-    text-shadow: 0 0 30px var(--red);
-    margin-bottom: 8px;
-  }
-
+  .over-title { font-family: 'Black Ops One', cursive; font-size: 42px; color: var(--red); text-shadow: 0 0 30px var(--red); margin-bottom: 8px; }
   .over-sub { font-size: 13px; color: #666; letter-spacing: 3px; margin-bottom: 24px; }
-
-  .score-display {
-    font-family: 'Black Ops One', cursive;
-    font-size: 52px;
-    color: var(--gold-bright);
-    text-shadow: 0 0 20px var(--gold);
-    margin-bottom: 4px;
-  }
-
+  .score-display { font-family: 'Black Ops One', cursive; font-size: 52px; color: var(--gold-bright); text-shadow: 0 0 20px var(--gold); margin-bottom: 4px; }
   .score-label { font-size: 11px; letter-spacing: 4px; color: #666; margin-bottom: 28px; }
-
-  .level-badge {
-    font-family: 'Black Ops One', cursive;
-    font-size: 56px;
-    color: var(--gold-bright);
-    text-shadow: 0 0 30px var(--gold);
-    animation: pulse 0.6s ease-in-out infinite alternate;
-  }
-
-  @keyframes pulse {
-    from { transform: scale(1); }
-    to { transform: scale(1.05); text-shadow: 0 0 50px var(--gold); }
-  }
-
+  .level-badge { font-family: 'Black Ops One', cursive; font-size: 56px; color: var(--gold-bright); text-shadow: 0 0 30px var(--gold); animation: pulse 0.6s ease-in-out infinite alternate; }
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); text-shadow: 0 0 50px var(--gold); } }
   .level-desc { font-size: 13px; color: #999; letter-spacing: 2px; margin: 12px 0 28px; line-height: 1.7; }
-
   #stars { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-
-  .star {
-    position: absolute;
-    background: white;
-    border-radius: 50%;
-    animation: twinkle var(--d, 2s) ease-in-out infinite alternate;
-  }
-
-  @keyframes twinkle {
-    from { opacity: 0.1; }
-    to { opacity: 0.8; }
-  }
-
-  #ammoBar {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 6px;
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  .ammo-pip {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--gold);
-    box-shadow: 0 0 6px var(--gold);
-    transition: all 0.2s;
-  }
-
+  .star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--d, 2s) ease-in-out infinite alternate; }
+  @keyframes twinkle { from { opacity: 0.1; } to { opacity: 0.8; } }
+  #ammoBar { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; pointer-events: none; z-index: 10; }
+  .ammo-pip { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 6px var(--gold); transition: all 0.2s; }
   .ammo-pip.empty { background: #222; box-shadow: none; }
-
-  .score-popup {
-    position: absolute;
-    font-family: 'Black Ops One', cursive;
-    font-size: 18px;
-    color: var(--gold-bright);
-    pointer-events: none;
-    animation: floatUp 0.9s ease-out forwards;
-    z-index: 30;
-    text-shadow: 0 0 10px var(--gold);
-  }
-
-  @keyframes floatUp {
-    0% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
-  }
-
-  #waveBanner {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-family: 'Black Ops One', cursive;
-    font-size: 36px;
-    color: var(--gold-bright);
-    text-shadow: 0 0 30px var(--gold);
-    letter-spacing: 4px;
-    pointer-events: none;
-    z-index: 25;
-    opacity: 0;
-    transition: opacity 0.3s;
-    white-space: nowrap;
-  }
-
-  #waveBanner.show {
-    opacity: 1;
-    animation: bannerAnim 2s ease forwards;
-  }
-
-  @keyframes bannerAnim {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
-    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
-    70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
-  }
-
+  .score-popup { position: absolute; font-family: 'Black Ops One', cursive; font-size: 18px; color: var(--gold-bright); pointer-events: none; animation: floatUp 0.9s ease-out forwards; z-index: 30; text-shadow: 0 0 10px var(--gold); }
+  @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(1.3); } }
+  #waveBanner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Black Ops One', cursive; font-size: 36px; color: var(--gold-bright); text-shadow: 0 0 30px var(--gold); letter-spacing: 4px; pointer-events: none; z-index: 25; opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
+  #waveBanner.show { opacity: 1; animation: bannerAnim 2s ease forwards; }
+  @keyframes bannerAnim { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } 70% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1); } }
   #highScoreDisplay { font-size: 12px; color: #555; letter-spacing: 2px; margin-top: 6px; }
 </style>
 </head>
 <body>
-
 <div id="gameContainer">
   <div id="stars"></div>
-
   <div id="hud">
-    <div class="hud-block">
-      <div class="hud-label">SCORE</div>
-      <div class="hud-value" id="scoreDisplay">0</div>
-    </div>
-    <div class="hud-block">
-      <div class="hud-label">TREES</div>
-      <div id="treesRow"></div>
-    </div>
-    <div class="hud-block">
-      <div class="hud-label">WAVE</div>
-      <div class="hud-value wave" id="waveDisplay">1</div>
-    </div>
+    <div class="hud-block"><div class="hud-label">SCORE</div><div class="hud-value" id="scoreDisplay">0</div></div>
+    <div class="hud-block"><div class="hud-label">TREES</div><div id="treesRow"></div></div>
+    <div class="hud-block"><div class="hud-label">WAVE</div><div class="hud-value wave" id="waveDisplay">1</div></div>
   </div>
-
   <canvas id="gameCanvas"></canvas>
   <div id="ammoBar"></div>
   <div id="waveBanner"></div>
-
   <div class="screen" id="startScreen">
     <div class="logo">SQUACHACERS</div>
     <div class="subtitle">INVASION</div>
     <div class="bigfoot-art">🦶</div>
-    <div class="game-desc">
-      ALIENS ARE ATTACKING THE FOREST<br>
-      HURL STONES. PROTECT THE TREES.<br>
-      SURVIVE THE WAVES.
-    </div>
+    <div class="game-desc">ALIENS ARE ATTACKING THE FOREST<br>HURL STONES. PROTECT THE TREES.<br>SURVIVE THE WAVES.</div>
     <button class="btn" id="startBtn">BEGIN THE HUNT</button>
     <div id="highScoreDisplay">BEST: <span id="hsStart">0</span></div>
   </div>
-
   <div class="screen" id="levelScreen">
     <div class="hud-label" style="letter-spacing:4px; margin-bottom:8px;">WAVE CLEARED</div>
     <div class="level-badge" id="levelBadge">WAVE 2</div>
     <div class="level-desc" id="levelDesc">Faster aliens incoming.<br>Stay sharp, Acer.</div>
     <button class="btn" id="nextWaveBtn">KEEP HUNTING</button>
   </div>
-
   <div class="screen" id="gameOverScreen">
     <div class="over-title">OVERRUN</div>
     <div class="over-sub">THE FOREST HAS FALLEN</div>
     <div class="score-display" id="finalScore">0</div>
     <div class="score-label">POINTS SCORED</div>
-    <div id="highScoreDisplay" style="margin-bottom:24px; font-size:12px; color:#555; letter-spacing:2px;">
-      BEST: <span id="hsFinal">0</span>
-    </div>
+    <div id="highScoreDisplay" style="margin-bottom:24px; font-size:12px; color:#555; letter-spacing:2px;">BEST: <span id="hsFinal">0</span></div>
     <button class="btn" id="retryBtn">RETRY ACER</button>
   </div>
 </div>
-
 <script>
 (function() {
-  const container = document.getElementById('stars');
+  const c = document.getElementById('stars');
   for (let i = 0; i < 80; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const size = Math.random() * 2 + 0.5;
-    s.style.cssText = `width:${size}px; height:${size}px; top:${Math.random()*100}%; left:${Math.random()*100}%; --d:${1.5+Math.random()*3}s; animation-delay:${Math.random()*3}s`;
-    container.appendChild(s);
+    const s = document.createElement('div'); s.className = 'star';
+    const sz = Math.random()*2+0.5;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${1.5+Math.random()*3}s;animation-delay:${Math.random()*3}s`;
+    c.appendChild(s);
   }
 })();
 
@@ -341,395 +106,215 @@ const ctx = canvas.getContext('2d');
 const W = 500, H = 700;
 canvas.width = W; canvas.height = H;
 
-let state = 'start';
-let score = 0, wave = 1, trees = 5;
+let state = 'start', score = 0, wave = 1, trees = 5;
 let stones = [], aliens = [], particles = [], explosions = [];
 let ammo = 5, maxAmmo = 5, reloading = false, reloadTimer = 0;
-let lastTime = 0, spawnTimer = 0;
-let waveAliens = 0, waveKills = 0, waveGoal = 10;
-let squachX = W / 2, squachAnim = 0;
-let throwing = false, throwAnim = 0;
-let highScore = parseInt(localStorage.getItem('squach_hs') || '0');
+let lastTime = 0, spawnTimer = 0, waveAliens = 0, waveKills = 0, waveGoal = 10;
+let squachX = W/2, squachAnim = 0, throwing = false, throwAnim = 0;
+let highScore = parseInt(localStorage.getItem('squach_hs')||'0');
 let treeDamageFlash = 0, screenShake = 0;
 
 function getWaveConfig(w) {
-  return {
-    goal: 8 + w * 4,
-    spawnRate: Math.max(0.4, 1.8 - w * 0.12),
-    speed: Math.min(90, 28 + w * 7),
-    hp: Math.min(5, 1 + Math.floor(w / 3)),
-    bigAlienChance: Math.min(0.35, w * 0.04),
-    fastAlienChance: Math.min(0.4, w * 0.05),
-    scorePerKill: 10 + w * 5,
-  };
+  return { goal: 8+w*4, spawnRate: Math.max(0.4,1.8-w*0.12), speed: Math.min(90,28+w*7), hp: Math.min(5,1+Math.floor(w/3)), bigAlienChance: Math.min(0.35,w*0.04), fastAlienChance: Math.min(0.4,w*0.05), scorePerKill: 10+w*5 };
 }
 
 function spawnAlien(cfg) {
   const big = Math.random() < cfg.bigAlienChance;
   const fast = !big && Math.random() < cfg.fastAlienChance;
   const lane = Math.random() < 0.5 ? -1 : 1;
-  aliens.push({
-    x: lane === -1 ? -40 : W + 40,
-    y: 300 + Math.random() * 180,
-    tx: 80 + Math.random() * (W - 160),
-    ty: 300 + Math.random() * 180,
-    phase: 'approach',
-    speed: fast ? cfg.speed * 1.7 : big ? cfg.speed * 0.6 : cfg.speed,
-    hp: big ? cfg.hp * 2 : cfg.hp,
-    maxHp: big ? cfg.hp * 2 : cfg.hp,
-    big, fast,
-    size: big ? 36 : fast ? 20 : 28,
-    wobble: Math.random() * Math.PI * 2,
-    wobbleSpeed: 1.5 + Math.random(),
-    color: fast ? '#ff4488' : big ? '#ff8800' : '#7fff7f',
-    score: big ? cfg.scorePerKill * 3 : fast ? cfg.scorePerKill * 2 : cfg.scorePerKill,
-    attackTimer: 0, beam: null,
-  });
+  aliens.push({ x: lane===-1?-40:W+40, y: 300+Math.random()*180, tx: 80+Math.random()*(W-160), ty: 300+Math.random()*180, phase:'approach', speed: fast?cfg.speed*1.7:big?cfg.speed*0.6:cfg.speed, hp: big?cfg.hp*2:cfg.hp, maxHp: big?cfg.hp*2:cfg.hp, big, fast, size: big?36:fast?20:28, wobble: Math.random()*Math.PI*2, wobbleSpeed: 1.5+Math.random(), color: fast?'#ff4488':big?'#ff8800':'#7fff7f', score: big?cfg.scorePerKill*3:fast?cfg.scorePerKill*2:cfg.scorePerKill, attackTimer:0, beam:null });
 }
 
-function spawnParticles(x, y, color, count = 12) {
-  for (let i = 0; i < count; i++) {
-    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5;
-    const speed = 50 + Math.random() * 120;
-    particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1, decay: 0.8 + Math.random()*0.6, size: 2 + Math.random()*4, color });
-  }
+function spawnParticles(x,y,color,count=12) {
+  for(let i=0;i<count;i++){const a=(Math.PI*2*i)/count+Math.random()*0.5,sp=50+Math.random()*120;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,decay:0.8+Math.random()*0.6,size:2+Math.random()*4,color});}
 }
 
-function spawnExplosion(x, y, radius, color) {
-  explosions.push({ x, y, radius, maxRadius: radius, life: 1, color });
+function spawnExplosion(x,y,radius,color){explosions.push({x,y,radius,maxRadius:radius,life:1,color});}
+
+function handleShoot(ex,ey) {
+  if(state!=='playing'||ammo<=0||reloading) return;
+  const rect=canvas.getBoundingClientRect();
+  const cx=(ex-rect.left)*(W/rect.width), cy=(ey-rect.top)*(H/rect.height);
+  ammo--; throwing=true; throwAnim=0; updateAmmoBar();
+  const dx=cx-squachX, dy=cy-(H-80), dist=Math.sqrt(dx*dx+dy*dy);
+  stones.push({x:squachX,y:H-80,vx:(dx/dist)*520,vy:(dy/dist)*520,trail:[],age:0});
+  if(ammo===0){reloading=true;reloadTimer=Math.max(0.8,2.5-wave*0.08);}
 }
 
-function handleShoot(ex, ey) {
-  if (state !== 'playing' || ammo <= 0 || reloading) return;
-  const rect = canvas.getBoundingClientRect();
-  const cx = (ex - rect.left) * (W / rect.width);
-  const cy = (ey - rect.top) * (H / rect.height);
-  ammo--;
-  throwing = true; throwAnim = 0;
-  updateAmmoBar();
-  const dx = cx - squachX, dy = cy - (H - 80);
-  const dist = Math.sqrt(dx*dx + dy*dy);
-  stones.push({ x: squachX, y: H - 80, tx: cx, ty: cy, vx: (dx/dist)*520, vy: (dy/dist)*520, trail: [], age: 0 });
-  if (ammo === 0) {
-    reloading = true;
-    reloadTimer = Math.max(0.8, 2.5 - wave * 0.08);
-  }
+canvas.addEventListener('click',e=>handleShoot(e.clientX,e.clientY));
+canvas.addEventListener('touchstart',e=>{e.preventDefault();handleShoot(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();squachX=Math.max(30,Math.min(W-30,(e.clientX-r.left)*(W/r.width)));});
+canvas.addEventListener('touchmove',e=>{e.preventDefault();const r=canvas.getBoundingClientRect();squachX=Math.max(30,Math.min(W-30,(e.touches[0].clientX-r.left)*(W/r.width)));},{passive:false});
+
+function updateAmmoBar(){const b=document.getElementById('ammoBar');b.innerHTML='';for(let i=0;i<maxAmmo;i++){const p=document.createElement('div');p.className='ammo-pip'+(i<ammo?'':' empty');b.appendChild(p);}}
+function updateHUD(){document.getElementById('scoreDisplay').textContent=score;document.getElementById('waveDisplay').textContent=wave;const row=document.getElementById('treesRow');row.innerHTML='';for(let i=0;i<5;i++){const t=document.createElement('div');t.className='tree-icon'+(i<trees?'':' dead');t.textContent='🌲';row.appendChild(t);}}
+function showScorePopup(x,y,val){const el=document.createElement('div');el.className='score-popup';el.textContent='+'+val;const r=canvas.getBoundingClientRect();el.style.left=(r.left+x*(r.width/W))+'px';el.style.top=(r.top+y*(r.height/H))+'px';document.body.appendChild(el);setTimeout(()=>el.remove(),900);}
+function showWaveBanner(text){const b=document.getElementById('waveBanner');b.textContent=text;b.className='show';setTimeout(()=>b.className='',2100);}
+
+function startGame(){
+  score=0;wave=1;trees=5;ammo=maxAmmo;stones=[];aliens=[];particles=[];explosions=[];reloading=false;reloadTimer=0;spawnTimer=0;
+  const cfg=getWaveConfig(wave);waveGoal=cfg.goal;waveKills=0;waveAliens=0;
+  ['startScreen','gameOverScreen','levelScreen'].forEach(id=>document.getElementById(id).style.display='none');
+  state='playing';updateHUD();updateAmmoBar();showWaveBanner('WAVE 1 — BEGIN');lastTime=performance.now();requestAnimationFrame(loop);
 }
 
-canvas.addEventListener('click', e => handleShoot(e.clientX, e.clientY));
-canvas.addEventListener('touchstart', e => { e.preventDefault(); handleShoot(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
-canvas.addEventListener('mousemove', e => { const r = canvas.getBoundingClientRect(); squachX = Math.max(30, Math.min(W-30, (e.clientX-r.left)*(W/r.width))); });
-canvas.addEventListener('touchmove', e => { e.preventDefault(); const r = canvas.getBoundingClientRect(); squachX = Math.max(30, Math.min(W-30, (e.touches[0].clientX-r.left)*(W/r.width))); }, { passive: false });
-
-function updateAmmoBar() {
-  const bar = document.getElementById('ammoBar');
-  bar.innerHTML = '';
-  for (let i = 0; i < maxAmmo; i++) {
-    const p = document.createElement('div');
-    p.className = 'ammo-pip' + (i < ammo ? '' : ' empty');
-    bar.appendChild(p);
-  }
+function nextWave(){
+  wave++;stones=[];aliens=[];particles=[];reloading=false;reloadTimer=0;spawnTimer=0;ammo=maxAmmo;
+  const cfg=getWaveConfig(wave);waveGoal=cfg.goal;waveKills=0;waveAliens=0;
+  document.getElementById('levelScreen').style.display='none';
+  state='playing';updateHUD();updateAmmoBar();showWaveBanner('WAVE '+wave+' — INCOMING');lastTime=performance.now();requestAnimationFrame(loop);
 }
 
-function updateHUD() {
-  document.getElementById('scoreDisplay').textContent = score;
-  document.getElementById('waveDisplay').textContent = wave;
-  const row = document.getElementById('treesRow');
-  row.innerHTML = '';
-  for (let i = 0; i < 5; i++) {
-    const t = document.createElement('div');
-    t.className = 'tree-icon' + (i < trees ? '' : ' dead');
-    t.textContent = '🌲';
-    row.appendChild(t);
-  }
+function gameOver(){
+  state='gameover';if(score>highScore){highScore=score;localStorage.setItem('squach_hs',highScore);}
+  document.getElementById('finalScore').textContent=score;document.getElementById('hsFinal').textContent=highScore;document.getElementById('gameOverScreen').style.display='flex';
 }
 
-function showScorePopup(x, y, val) {
-  const el = document.createElement('div');
-  el.className = 'score-popup';
-  el.textContent = '+' + val;
-  const rect = canvas.getBoundingClientRect();
-  el.style.left = (rect.left + x*(rect.width/W)) + 'px';
-  el.style.top = (rect.top + y*(rect.height/H)) + 'px';
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 900);
+function levelUp(){
+  state='levelup';
+  const msgs=['Faster aliens incoming.\nStay sharp, Acer.','They\'re angrier now.\nHold the line.','Bigger ships detected.\nAim true.','They\'ve called reinforcements.\nDon\'t flinch.','Maximum alert.\nThe forest needs you.'];
+  document.getElementById('levelBadge').textContent='WAVE '+(wave+1);document.getElementById('levelDesc').textContent=msgs[Math.min(wave,msgs.length-1)];document.getElementById('levelScreen').style.display='flex';
 }
 
-function showWaveBanner(text) {
-  const b = document.getElementById('waveBanner');
-  b.textContent = text;
-  b.className = 'show';
-  setTimeout(() => b.className = '', 2100);
-}
-
-function startGame() {
-  score = 0; wave = 1; trees = 5; ammo = maxAmmo;
-  stones = []; aliens = []; particles = []; explosions = [];
-  reloading = false; reloadTimer = 0; spawnTimer = 0;
-  const cfg = getWaveConfig(wave);
-  waveGoal = cfg.goal; waveKills = 0; waveAliens = 0;
-  ['startScreen','gameOverScreen','levelScreen'].forEach(id => document.getElementById(id).style.display = 'none');
-  state = 'playing';
-  updateHUD(); updateAmmoBar();
-  showWaveBanner('WAVE 1 — BEGIN');
-  lastTime = performance.now();
-  requestAnimationFrame(loop);
-}
-
-function nextWave() {
-  wave++;
-  stones = []; aliens = []; particles = [];
-  reloading = false; reloadTimer = 0; spawnTimer = 0; ammo = maxAmmo;
-  const cfg = getWaveConfig(wave);
-  waveGoal = cfg.goal; waveKills = 0; waveAliens = 0;
-  document.getElementById('levelScreen').style.display = 'none';
-  state = 'playing';
-  updateHUD(); updateAmmoBar();
-  showWaveBanner('WAVE ' + wave + ' — INCOMING');
-  lastTime = performance.now();
-  requestAnimationFrame(loop);
-}
-
-function gameOver() {
-  state = 'gameover';
-  if (score > highScore) { highScore = score; localStorage.setItem('squach_hs', highScore); }
-  document.getElementById('finalScore').textContent = score;
-  document.getElementById('hsFinal').textContent = highScore;
-  document.getElementById('gameOverScreen').style.display = 'flex';
-}
-
-function levelUp() {
-  state = 'levelup';
-  const msgs = ['Faster aliens incoming.\nStay sharp, Acer.','They\'re angrier now.\nHold the line.','Bigger ships detected.\nAim true.','They\'ve called reinforcements.\nDon\'t flinch.','Maximum alert.\nThe forest needs you.'];
-  document.getElementById('levelBadge').textContent = 'WAVE ' + (wave + 1);
-  document.getElementById('levelDesc').textContent = msgs[Math.min(wave, msgs.length-1)];
-  document.getElementById('levelScreen').style.display = 'flex';
-}
-
-function drawBackground(t) {
-  const sky = ctx.createLinearGradient(0,0,0,H*0.65);
-  sky.addColorStop(0,'#030818'); sky.addColorStop(1,'#0d1a3a');
-  ctx.fillStyle = sky; ctx.fillRect(0,0,W,H*0.65);
-  const ground = ctx.createLinearGradient(0,H*0.65,0,H);
-  ground.addColorStop(0,'#0a1f0a'); ground.addColorStop(1,'#050f05');
-  ctx.fillStyle = ground; ctx.fillRect(0,H*0.65,W,H*0.35);
-  ctx.strokeStyle = '#1a4a1a'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(0,H*0.65); ctx.lineTo(W,H*0.65); ctx.stroke();
+function drawBackground(t){
+  const sky=ctx.createLinearGradient(0,0,0,H*0.65);sky.addColorStop(0,'#030818');sky.addColorStop(1,'#0d1a3a');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H*0.65);
+  const ground=ctx.createLinearGradient(0,H*0.65,0,H);ground.addColorStop(0,'#0a1f0a');ground.addColorStop(1,'#050f05');ctx.fillStyle=ground;ctx.fillRect(0,H*0.65,W,H*0.35);
+  ctx.strokeStyle='#1a4a1a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,H*0.65);ctx.lineTo(W,H*0.65);ctx.stroke();
   drawTrees(t);
-  ctx.save();
-  ctx.shadowBlur = 30; ctx.shadowColor = '#aaccff'; ctx.fillStyle = '#ddeeff';
-  ctx.beginPath(); ctx.arc(W*0.82,70,28,0,Math.PI*2); ctx.fill();
-  ctx.shadowBlur = 0; ctx.restore();
+  ctx.save();ctx.shadowBlur=30;ctx.shadowColor='#aaccff';ctx.fillStyle='#ddeeff';ctx.beginPath();ctx.arc(W*0.82,70,28,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.restore();
 }
 
-function drawTrees(t) {
-  const treeX = [60,130,220,350,430];
-  for (let i = 0; i < 5; i++) {
-    const alive = i < trees;
-    const sway = Math.sin(t*0.8+i) * (alive ? 2 : 0);
-    ctx.save(); ctx.translate(treeX[i], H*0.65);
-    if (alive) {
-      ctx.strokeStyle = '#3a2a1a'; ctx.lineWidth = 6;
-      ctx.beginPath(); ctx.moveTo(sway,0); ctx.lineTo(sway,-60); ctx.stroke();
-      for (let layer = 0; layer < 3; layer++) {
-        ctx.globalAlpha = treeDamageFlash > 0 ? 0.5 : 1;
-        ctx.fillStyle = ['#1a4a1a','#226622','#2a7a2a'][layer];
-        ctx.beginPath(); ctx.arc(sway,-60-layer*20,28-layer*5,0,Math.PI*2); ctx.fill();
-        ctx.globalAlpha = 1;
-      }
+function drawTrees(t){
+  const tx=[60,130,220,350,430];
+  for(let i=0;i<5;i++){
+    const alive=i<trees,sway=Math.sin(t*0.8+i)*(alive?2:0);
+    ctx.save();ctx.translate(tx[i],H*0.65);
+    if(alive){
+      ctx.strokeStyle='#3a2a1a';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(sway,0);ctx.lineTo(sway,-60);ctx.stroke();
+      for(let l=0;l<3;l++){ctx.globalAlpha=treeDamageFlash>0?0.5:1;ctx.fillStyle=['#1a4a1a','#226622','#2a7a2a'][l];ctx.beginPath();ctx.arc(sway,-60-l*20,28-l*5,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}
     } else {
-      ctx.globalAlpha = 0.25; ctx.strokeStyle = '#332211'; ctx.lineWidth = 5;
-      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,-50); ctx.moveTo(-12,-20); ctx.lineTo(0,-30); ctx.moveTo(12,-35); ctx.lineTo(0,-40); ctx.stroke();
-      ctx.globalAlpha = 1;
+      ctx.globalAlpha=0.25;ctx.strokeStyle='#332211';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-50);ctx.moveTo(-12,-20);ctx.lineTo(0,-30);ctx.moveTo(12,-35);ctx.lineTo(0,-40);ctx.stroke();ctx.globalAlpha=1;
     }
     ctx.restore();
   }
 }
 
-function drawSquach(t) {
-  const bounce = Math.sin(squachAnim) * 3;
-  const throwOffset = throwing ? Math.sin(throwAnim * Math.PI) * -15 : 0;
-  ctx.save(); ctx.translate(squachX, H-40+bounce);
-  ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.beginPath(); ctx.ellipse(0,10,25,8,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#3a2a1a'; ctx.beginPath(); ctx.ellipse(0,-30,20,30,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#4a3522'; ctx.beginPath(); ctx.arc(0,-65,18,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#FFD700'; ctx.shadowBlur = 8; ctx.shadowColor = '#FFD700';
-  ctx.beginPath(); ctx.arc(-6,-67,3.5,0,Math.PI*2); ctx.arc(6,-67,3.5,0,Math.PI*2); ctx.fill();
-  ctx.shadowBlur = 0;
-  ctx.fillStyle = '#3a2a1a'; ctx.save(); ctx.translate(16+(throwing?throwOffset:0),-45);
-  if (throwing) { ctx.rotate(throwOffset*0.06); }
-  ctx.beginPath(); ctx.ellipse(0,0,8,20,-0.3,0,Math.PI*2); ctx.fill();
-  if (throwing) {
-    ctx.fillStyle = '#aaaaaa'; ctx.shadowBlur = 6; ctx.shadowColor = '#fff';
-    ctx.beginPath(); ctx.arc(8,-18+throwOffset,6,0,Math.PI*2); ctx.fill(); ctx.shadowBlur = 0;
-  }
-  ctx.restore(); ctx.restore();
+function drawSquach(t){
+  const bounce=Math.sin(squachAnim)*3,throwOffset=throwing?Math.sin(throwAnim*Math.PI)*-15:0;
+  ctx.save();ctx.translate(squachX,H-40+bounce);
+  ctx.fillStyle='rgba(0,0,0,0.4)';ctx.beginPath();ctx.ellipse(0,10,25,8,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#3a2a1a';ctx.beginPath();ctx.ellipse(0,-30,20,30,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#4a3522';ctx.beginPath();ctx.arc(0,-65,18,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#FFD700';ctx.shadowBlur=8;ctx.shadowColor='#FFD700';ctx.beginPath();ctx.arc(-6,-67,3.5,0,Math.PI*2);ctx.arc(6,-67,3.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+  ctx.fillStyle='#3a2a1a';ctx.save();ctx.translate(16+(throwing?throwOffset:0),-45);
+  if(throwing){ctx.rotate(throwOffset*0.06);}
+  ctx.beginPath();ctx.ellipse(0,0,8,20,-0.3,0,Math.PI*2);ctx.fill();
+  if(throwing){ctx.fillStyle='#aaaaaa';ctx.shadowBlur=6;ctx.shadowColor='#fff';ctx.beginPath();ctx.arc(8,-18+throwOffset,6,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;}
+  ctx.restore();ctx.restore();
 }
 
-function drawAlien(a, t) {
-  ctx.save(); ctx.translate(a.x, a.y + Math.sin(a.wobble+t*a.wobbleSpeed)*6);
-  ctx.shadowBlur = a.big ? 30 : 18; ctx.shadowColor = a.color;
-  ctx.fillStyle = a.color; ctx.beginPath(); ctx.ellipse(0,0,a.size,a.size*0.35,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = a.big ? '#ffcc44' : a.fast ? '#ff88cc' : '#aaffaa';
-  ctx.beginPath(); ctx.ellipse(0,-a.size*0.2,a.size*0.5,a.size*0.45,0,Math.PI,0); ctx.fill();
-  const lc = ['#ff0','#f00','#0ff'];
-  for (let i = -1; i <= 1; i++) {
-    ctx.fillStyle = lc[i+1]; ctx.shadowColor = lc[i+1]; ctx.shadowBlur = 8;
-    ctx.beginPath(); ctx.arc(i*a.size*0.45,a.size*0.1,3,0,Math.PI*2); ctx.fill();
-  }
-  ctx.shadowBlur = 0;
-  if (a.maxHp > 1) {
-    const bw = a.size*2;
-    ctx.fillStyle = '#333'; ctx.fillRect(-bw/2,-a.size-12,bw,4);
-    const r = a.hp/a.maxHp;
-    ctx.fillStyle = r>0.5?'#4f4':r>0.25?'#ff0':'#f44';
-    ctx.fillRect(-bw/2,-a.size-12,bw*r,4);
-  }
-  if (a.beam) {
-    const grad = ctx.createLinearGradient(0,a.size*0.2,0,H*0.65-a.y);
-    grad.addColorStop(0,'rgba(127,255,127,0.4)'); grad.addColorStop(1,'rgba(127,255,127,0)');
-    ctx.fillStyle = grad;
-    ctx.beginPath(); ctx.moveTo(-a.size*0.5,a.size*0.2); ctx.lineTo(a.size*0.5,a.size*0.2);
-    ctx.lineTo(a.size*0.8,H*0.65-a.y); ctx.lineTo(-a.size*0.8,H*0.65-a.y); ctx.closePath(); ctx.fill();
-  }
+function drawAlien(a,t){
+  ctx.save();ctx.translate(a.x,a.y+Math.sin(a.wobble+t*a.wobbleSpeed)*6);
+  ctx.shadowBlur=a.big?30:18;ctx.shadowColor=a.color;
+  ctx.fillStyle=a.color;ctx.beginPath();ctx.ellipse(0,0,a.size,a.size*0.35,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=a.big?'#ffcc44':a.fast?'#ff88cc':'#aaffaa';ctx.beginPath();ctx.ellipse(0,-a.size*0.2,a.size*0.5,a.size*0.45,0,Math.PI,0);ctx.fill();
+  const lc=['#ff0','#f00','#0ff'];
+  for(let i=-1;i<=1;i++){ctx.fillStyle=lc[i+1];ctx.shadowColor=lc[i+1];ctx.shadowBlur=8;ctx.beginPath();ctx.arc(i*a.size*0.45,a.size*0.1,3,0,Math.PI*2);ctx.fill();}
+  ctx.shadowBlur=0;
+  if(a.maxHp>1){const bw=a.size*2,r=a.hp/a.maxHp;ctx.fillStyle='#333';ctx.fillRect(-bw/2,-a.size-12,bw,4);ctx.fillStyle=r>0.5?'#4f4':r>0.25?'#ff0':'#f44';ctx.fillRect(-bw/2,-a.size-12,bw*r,4);}
+  if(a.beam){const grad=ctx.createLinearGradient(0,a.size*0.2,0,H*0.65-a.y);grad.addColorStop(0,'rgba(127,255,127,0.4)');grad.addColorStop(1,'rgba(127,255,127,0)');ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(-a.size*0.5,a.size*0.2);ctx.lineTo(a.size*0.5,a.size*0.2);ctx.lineTo(a.size*0.8,H*0.65-a.y);ctx.lineTo(-a.size*0.8,H*0.65-a.y);ctx.closePath();ctx.fill();}
   ctx.restore();
 }
 
-function drawStone(s) {
-  const alpha = Math.min(1, s.age*4);
-  for (let i = 0; i < s.trail.length; i++) {
-    ctx.fillStyle = `rgba(201,168,76,${(i/s.trail.length)*0.5*alpha})`;
-    ctx.beginPath(); ctx.arc(s.trail[i].x,s.trail[i].y,6*(i/s.trail.length),0,Math.PI*2); ctx.fill();
-  }
-  ctx.save(); ctx.globalAlpha = alpha; ctx.shadowBlur = 15; ctx.shadowColor = '#FFD700';
-  ctx.fillStyle = '#ccbbaa'; ctx.beginPath(); ctx.arc(s.x,s.y,8,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#FFD700'; ctx.beginPath(); ctx.arc(s.x-2,s.y-2,3,0,Math.PI*2); ctx.fill();
-  ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.restore();
+function drawStone(s){
+  const alpha=Math.min(1,s.age*4);
+  for(let i=0;i<s.trail.length;i++){ctx.fillStyle=`rgba(201,168,76,${(i/s.trail.length)*0.5*alpha})`;ctx.beginPath();ctx.arc(s.trail[i].x,s.trail[i].y,6*(i/s.trail.length),0,Math.PI*2);ctx.fill();}
+  ctx.save();ctx.globalAlpha=alpha;ctx.shadowBlur=15;ctx.shadowColor='#FFD700';ctx.fillStyle='#ccbbaa';ctx.beginPath();ctx.arc(s.x,s.y,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(s.x-2,s.y-2,3,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1;ctx.restore();
 }
 
-function drawParticle(p) {
-  ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.shadowBlur = 6; ctx.shadowColor = p.color;
-  ctx.beginPath(); ctx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2); ctx.fill();
-  ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+function drawParticle(p){ctx.globalAlpha=p.life;ctx.fillStyle=p.color;ctx.shadowBlur=6;ctx.shadowColor=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1;}
+function drawExplosion(e){ctx.save();ctx.globalAlpha=e.life*0.4;ctx.strokeStyle=e.color;ctx.lineWidth=3;ctx.shadowBlur=20;ctx.shadowColor=e.color;ctx.beginPath();ctx.arc(e.x,e.y,e.maxRadius*(1-e.life),0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.restore();}
+
+function drawWaveProgress(){
+  const bw=W-40;ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fillRect(20,58,bw,4);
+  const grad=ctx.createLinearGradient(20,0,20+bw,0);grad.addColorStop(0,'#C9A84C');grad.addColorStop(1,'#FFD700');ctx.fillStyle=grad;ctx.fillRect(20,58,bw*Math.min(1,waveKills/waveGoal),4);
 }
 
-function drawExplosion(e) {
-  ctx.save(); ctx.globalAlpha = e.life*0.4; ctx.strokeStyle = e.color; ctx.lineWidth = 3;
-  ctx.shadowBlur = 20; ctx.shadowColor = e.color;
-  ctx.beginPath(); ctx.arc(e.x,e.y,e.maxRadius*(1-e.life),0,Math.PI*2); ctx.stroke();
-  ctx.globalAlpha = 1; ctx.shadowBlur = 0; ctx.restore();
+function drawReloadIndicator(){
+  if(!reloading)return;const maxT=Math.max(0.8,2.5-wave*0.08),progress=1-reloadTimer/maxT;
+  ctx.save();ctx.translate(squachX,H-110);ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,14,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#FFD700';ctx.shadowBlur=8;ctx.shadowColor='#FFD700';ctx.beginPath();ctx.arc(0,0,14,-Math.PI/2,-Math.PI/2+Math.PI*2*progress);ctx.stroke();ctx.shadowBlur=0;ctx.restore();
 }
 
-function drawWaveProgress() {
-  const bw = W-40;
-  ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.fillRect(20,58,bw,4);
-  const grad = ctx.createLinearGradient(20,0,20+bw,0);
-  grad.addColorStop(0,'#C9A84C'); grad.addColorStop(1,'#FFD700');
-  ctx.fillStyle = grad; ctx.fillRect(20,58,bw*Math.min(1,waveKills/waveGoal),4);
-}
+function update(dt,t){
+  squachAnim+=dt*3;
+  if(throwing){throwAnim+=dt*5;if(throwAnim>=1){throwing=false;throwAnim=0;}}
+  if(screenShake>0)screenShake-=dt*5;
+  if(treeDamageFlash>0)treeDamageFlash-=dt*3;
+  if(reloading){reloadTimer-=dt;if(reloadTimer<=0){reloading=false;ammo=maxAmmo;updateAmmoBar();}}
 
-function drawReloadIndicator() {
-  if (!reloading) return;
-  const maxT = Math.max(0.8, 2.5 - wave*0.08);
-  const progress = 1 - reloadTimer/maxT;
-  ctx.save(); ctx.translate(squachX, H-110);
-  ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.arc(0,0,14,0,Math.PI*2); ctx.stroke();
-  ctx.strokeStyle = '#FFD700'; ctx.shadowBlur = 8; ctx.shadowColor = '#FFD700';
-  ctx.beginPath(); ctx.arc(0,0,14,-Math.PI/2,-Math.PI/2+Math.PI*2*progress); ctx.stroke();
-  ctx.shadowBlur = 0; ctx.restore();
-}
+  const cfg=getWaveConfig(wave);
+  if(waveAliens<waveGoal+3){spawnTimer-=dt;if(spawnTimer<=0){spawnAlien(cfg);waveAliens++;spawnTimer=cfg.spawnRate*(0.7+Math.random()*0.6);}}
 
-function update(dt, t) {
-  squachAnim += dt*3;
-  if (throwing) { throwAnim += dt*5; if (throwAnim >= 1) { throwing = false; throwAnim = 0; } }
-  if (screenShake > 0) screenShake -= dt*5;
-  if (treeDamageFlash > 0) treeDamageFlash -= dt*3;
-  if (reloading) { reloadTimer -= dt; if (reloadTimer <= 0) { reloading = false; ammo = maxAmmo; updateAmmoBar(); } }
-
-  const cfg = getWaveConfig(wave);
-  if (waveAliens < waveGoal + 3) {
-    spawnTimer -= dt;
-    if (spawnTimer <= 0) { spawnAlien(cfg); waveAliens++; spawnTimer = cfg.spawnRate*(0.7+Math.random()*0.6); }
-  }
-
-  for (let i = aliens.length-1; i >= 0; i--) {
-    const a = aliens[i];
-    a.wobble += dt;
-    if (a.phase === 'approach') {
-      const dx = a.tx-a.x, dy = a.ty-a.y, dist = Math.sqrt(dx*dx+dy*dy);
-      if (dist < 5) { a.phase = 'descend'; }
-      else { a.x += (dx/dist)*a.speed*dt; a.y += (dy/dist)*a.speed*dt*0.5; }
-    } else if (a.phase === 'descend') {
-      a.y += a.speed*dt*0.4;
-      if (a.y >= H*0.65-a.size) { a.y = H*0.65-a.size; a.phase = 'attack'; a.beam = true; a.attackTimer = 2.5+Math.random(); }
-    } else if (a.phase === 'attack') {
-      a.attackTimer -= dt;
-      if (a.attackTimer <= 0) {
-        trees--; treeDamageFlash = 1; screenShake = 0.5; updateHUD();
-        spawnParticles(a.x,H*0.65,'#00ff44',20); spawnExplosion(a.x,H*0.65,60,'#00ff44');
-        a.beam = false; aliens.splice(i,1);
-        if (trees <= 0) { gameOver(); return; }
+  for(let i=aliens.length-1;i>=0;i--){
+    const a=aliens[i];a.wobble+=dt;
+    if(a.phase==='approach'){
+      const dx=a.tx-a.x,dy=a.ty-a.y,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<5){a.phase='descend';}else{a.x+=(dx/dist)*a.speed*dt;a.y+=(dy/dist)*a.speed*dt*0.5;}
+    } else if(a.phase==='descend'){
+      a.y+=a.speed*dt*0.4;
+      if(a.y>=H*0.65-a.size){a.y=H*0.65-a.size;a.phase='attack';a.beam=true;a.attackTimer=2.5+Math.random();}
+    } else if(a.phase==='attack'){
+      a.attackTimer-=dt;
+      if(a.attackTimer<=0){
+        trees--;treeDamageFlash=1;screenShake=0.5;updateHUD();
+        spawnParticles(a.x,H*0.65,'#00ff44',20);spawnExplosion(a.x,H*0.65,60,'#00ff44');
+        a.beam=false;aliens.splice(i,1);waveKills++;
+        if(trees<=0){gameOver();return;}
+        if(waveKills>=waveGoal&&aliens.length===0&&state==='playing'){setTimeout(levelUp,800);}
       }
     }
   }
 
-  for (let i = stones.length-1; i >= 0; i--) {
-    const s = stones[i];
-    s.trail.push({x:s.x,y:s.y}); if (s.trail.length > 10) s.trail.shift();
-    s.x += s.vx*dt; s.y += s.vy*dt; s.age += dt;
-    if (s.x < -50 || s.x > W+50 || s.y < -50 || s.y > H+50) { stones.splice(i,1); continue; }
-    let hit = false;
-    for (let j = aliens.length-1; j >= 0; j--) {
-      const a = aliens[j];
-      if (Math.sqrt((s.x-a.x)**2+(s.y-a.y)**2) < a.size+6) {
-        a.hp--;
-        spawnParticles(s.x,s.y,a.color,a.big?20:12);
-        if (a.hp <= 0) {
-          spawnExplosion(a.x,a.y,a.big?70:45,a.color); spawnParticles(a.x,a.y,a.color,a.big?30:18);
-          score += a.score; waveKills++; showScorePopup(a.x,a.y,a.score); aliens.splice(j,1);
-          if (waveKills >= waveGoal && aliens.length === 0 && state === 'playing') setTimeout(levelUp,800);
-        }
-        stones.splice(i,1); hit = true; break;
+  for(let i=stones.length-1;i>=0;i--){
+    const s=stones[i];s.trail.push({x:s.x,y:s.y});if(s.trail.length>10)s.trail.shift();
+    s.x+=s.vx*dt;s.y+=s.vy*dt;s.age+=dt;
+    if(s.x<-50||s.x>W+50||s.y<-50||s.y>H+50){stones.splice(i,1);continue;}
+    let hit=false;
+    for(let j=aliens.length-1;j>=0;j--){
+      const a=aliens[j];
+      if(Math.sqrt((s.x-a.x)**2+(s.y-a.y)**2)<a.size+6){
+        a.hp--;spawnParticles(s.x,s.y,a.color,a.big?20:12);
+        if(a.hp<=0){spawnExplosion(a.x,a.y,a.big?70:45,a.color);spawnParticles(a.x,a.y,a.color,a.big?30:18);score+=a.score;waveKills++;showScorePopup(a.x,a.y,a.score);aliens.splice(j,1);if(waveKills>=waveGoal&&aliens.length===0&&state==='playing'){setTimeout(levelUp,800);}}
+        stones.splice(i,1);hit=true;break;
       }
     }
-    if (hit) updateHUD();
+    if(hit)updateHUD();
   }
 
-  for (let i = particles.length-1; i >= 0; i--) {
-    const p = particles[i]; p.x += p.vx*dt; p.y += p.vy*dt; p.vy += 80*dt; p.life -= p.decay*dt;
-    if (p.life <= 0) particles.splice(i,1);
-  }
-  for (let i = explosions.length-1; i >= 0; i--) {
-    explosions[i].life -= dt*2; if (explosions[i].life <= 0) explosions.splice(i,1);
-  }
+  for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=80*dt;p.life-=p.decay*dt;if(p.life<=0)particles.splice(i,1);}
+  for(let i=explosions.length-1;i>=0;i--){explosions[i].life-=dt*2;if(explosions[i].life<=0)explosions.splice(i,1);}
 }
 
-function loop(timestamp) {
-  if (state !== 'playing') return;
-  const dt = Math.min((timestamp-lastTime)/1000, 0.05);
-  lastTime = timestamp;
-  const t = timestamp/1000;
+function loop(timestamp){
+  if(state!=='playing')return;
+  const dt=Math.min((timestamp-lastTime)/1000,0.05);lastTime=timestamp;const t=timestamp/1000;
   update(dt,t);
   ctx.save();
-  if (screenShake > 0) { const s = screenShake*8; ctx.translate((Math.random()-0.5)*s,(Math.random()-0.5)*s); }
-  drawBackground(t); drawWaveProgress(); drawReloadIndicator();
-  explosions.forEach(drawExplosion); aliens.forEach(a=>drawAlien(a,t));
-  stones.forEach(drawStone); particles.forEach(drawParticle); drawSquach(t);
+  if(screenShake>0){const s=screenShake*8;ctx.translate((Math.random()-0.5)*s,(Math.random()-0.5)*s);}
+  drawBackground(t);drawWaveProgress();drawReloadIndicator();
+  explosions.forEach(drawExplosion);aliens.forEach(a=>drawAlien(a,t));stones.forEach(drawStone);particles.forEach(drawParticle);drawSquach(t);
   ctx.restore();
   requestAnimationFrame(loop);
 }
 
-document.getElementById('startBtn').onclick = startGame;
-document.getElementById('retryBtn').onclick = startGame;
-document.getElementById('nextWaveBtn').onclick = nextWave;
-document.getElementById('hsStart').textContent = highScore;
+document.getElementById('startBtn').onclick=startGame;
+document.getElementById('retryBtn').onclick=startGame;
+document.getElementById('nextWaveBtn').onclick=nextWave;
+document.getElementById('hsStart').textContent=highScore;
 updateAmmoBar();
 
-(function titleDraw(ts) {
-  if (state !== 'start') return;
-  ctx.clearRect(0,0,W,H); drawBackground(ts/1000);
-  requestAnimationFrame(titleDraw);
+(function titleDraw(ts){
+  if(state!=='start')return;ctx.clearRect(0,0,W,H);drawBackground(ts/1000);requestAnimationFrame(titleDraw);
 })(0);
 </script>
 </body>
