@@ -24,21 +24,21 @@
   .tree-icon.dead{opacity:0.15;filter:none;}
   .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;padding:20px;text-align:center;}
   #startScreen{background:radial-gradient(ellipse at center,#0d1a3a 0%,#050510 100%);}
-  #gameOverScreen{background:rgba(5,5,16,0.95);display:none;}
+  #gameOverScreen{background:rgba(5,5,16,0.95);display:none;overflow-y:auto;}
   #levelScreen{background:rgba(5,5,16,0.97);display:none;}
   .logo{font-family:'Black Ops One',cursive;font-size:38px;color:var(--gold-bright);text-shadow:0 0 30px var(--gold),0 0 60px rgba(201,168,76,0.3);letter-spacing:3px;line-height:1;margin-bottom:4px;}
   .subtitle{font-family:'Black Ops One',cursive;font-size:14px;color:#aaa;letter-spacing:6px;margin-bottom:30px;}
   .bigfoot-art{font-size:80px;margin:10px 0;animation:breathe 3s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(201,168,76,0.5));}
   @keyframes breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
-  .game-desc{font-size:13px;color:#888;letter-spacing:1px;margin-bottom:28px;line-height:1.6;}
+  .game-desc{font-size:13px;color:#888;letter-spacing:1px;margin-bottom:20px;line-height:1.6;}
   .btn{font-family:'Black Ops One',cursive;font-size:16px;letter-spacing:3px;padding:14px 40px;border:2px solid var(--gold);background:transparent;color:var(--gold-bright);cursor:pointer;transition:all 0.2s;text-transform:uppercase;position:relative;overflow:hidden;}
   .btn::before{content:'';position:absolute;inset:0;background:var(--gold);opacity:0;transition:opacity 0.2s;}
   .btn:hover::before{opacity:0.15;}
   .btn:active{transform:scale(0.96);}
-  .over-title{font-family:'Black Ops One',cursive;font-size:42px;color:var(--red);text-shadow:0 0 30px var(--red);margin-bottom:8px;}
-  .over-sub{font-size:13px;color:#666;letter-spacing:3px;margin-bottom:24px;}
-  .score-display{font-family:'Black Ops One',cursive;font-size:52px;color:var(--gold-bright);text-shadow:0 0 20px var(--gold);margin-bottom:4px;}
-  .score-label{font-size:11px;letter-spacing:4px;color:#666;margin-bottom:28px;}
+  .over-title{font-family:'Black Ops One',cursive;font-size:42px;color:var(--red);text-shadow:0 0 30px var(--red);margin-bottom:4px;}
+  .over-sub{font-size:13px;color:#666;letter-spacing:3px;margin-bottom:12px;}
+  .score-display{font-family:'Black Ops One',cursive;font-size:52px;color:var(--gold-bright);text-shadow:0 0 20px var(--gold);margin-bottom:2px;}
+  .score-label{font-size:11px;letter-spacing:4px;color:#666;margin-bottom:16px;}
   .level-badge{font-family:'Black Ops One',cursive;font-size:56px;color:var(--gold-bright);text-shadow:0 0 30px var(--gold);animation:pulse 0.6s ease-in-out infinite alternate;}
   @keyframes pulse{from{transform:scale(1);}to{transform:scale(1.05);text-shadow:0 0 50px var(--gold);}}
   .level-desc{font-size:13px;color:#999;letter-spacing:2px;margin:12px 0 28px;line-height:1.7;}
@@ -54,6 +54,17 @@
   #waveBanner.show{opacity:1;animation:bannerAnim 2s ease forwards;}
   @keyframes bannerAnim{0%{opacity:0;transform:translate(-50%,-50%) scale(0.7);}20%{opacity:1;transform:translate(-50%,-50%) scale(1.05);}70%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1);}}
   #highScoreDisplay{font-size:12px;color:#555;letter-spacing:2px;margin-top:6px;}
+  .lb-row{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;margin-bottom:4px;font-family:'Black Ops One',cursive;font-size:13px;letter-spacing:1px;border-left:3px solid transparent;}
+  .lb-row.gold{border-color:#FFD700;background:rgba(255,215,0,0.08);}
+  .lb-row.silver{border-color:#aaa;background:rgba(200,200,200,0.05);}
+  .lb-row.bronze{border-color:#cd7f32;background:rgba(205,127,50,0.05);}
+  .lb-row.normal{border-color:#333;background:rgba(255,255,255,0.03);}
+  .lb-row.highlight{border-color:#C9A84C;background:rgba(201,168,76,0.15);animation:pulse 1s ease-in-out 3;}
+  .lb-rank{color:#C9A84C;width:24px;}
+  .lb-name{color:#fff;flex:1;padding:0 8px;}
+  .lb-score{color:#FFD700;}
+  .lb-wave{color:#555;font-size:10px;margin-left:6px;}
+  .lb-title{font-family:'Black Ops One',cursive;font-size:10px;letter-spacing:4px;color:#C9A84C;text-align:center;margin-bottom:8px;opacity:0.8;}
 </style>
 </head>
 <body>
@@ -67,6 +78,7 @@
   <canvas id="gameCanvas"></canvas>
   <div id="ammoBar"></div>
   <div id="waveBanner"></div>
+
   <div class="screen" id="startScreen">
     <div class="logo">SQUACHACERS</div>
     <div class="subtitle">INVASION</div>
@@ -75,21 +87,29 @@
     <button class="btn" id="startBtn">BEGIN THE HUNT</button>
     <div id="highScoreDisplay">BEST: <span id="hsStart">0</span></div>
   </div>
+
   <div class="screen" id="levelScreen">
     <div class="hud-label" style="letter-spacing:4px;margin-bottom:8px;">WAVE CLEARED</div>
     <div class="level-badge" id="levelBadge">WAVE 2</div>
     <div class="level-desc" id="levelDesc">Faster aliens incoming.<br>Stay sharp, Acer.</div>
     <button class="btn" id="nextWaveBtn">KEEP HUNTING</button>
   </div>
+
   <div class="screen" id="gameOverScreen">
     <div class="over-title">OVERRUN</div>
     <div class="over-sub">THE FOREST HAS FALLEN</div>
     <div class="score-display" id="finalScore">0</div>
     <div class="score-label">POINTS SCORED</div>
-    <div id="highScoreDisplay" style="margin-bottom:24px;font-size:12px;color:#555;letter-spacing:2px;">BEST: <span id="hsFinal">0</span></div>
+    <div id="nameEntrySection" style="display:none;flex-direction:column;align-items:center;margin-bottom:16px;">
+      <div style="font-family:'Black Ops One',cursive;font-size:11px;letter-spacing:3px;color:#C9A84C;margin-bottom:10px;">NEW HIGH SCORE — ENTER YOUR NAME</div>
+      <input id="playerNameInput" type="text" maxlength="12" placeholder="YOUR NAME" style="font-family:'Black Ops One',cursive;font-size:18px;letter-spacing:3px;background:rgba(0,0,0,0.6);border:2px solid #C9A84C;color:#FFD700;padding:10px 16px;text-align:center;outline:none;width:220px;text-transform:uppercase;">
+      <button class="btn" id="saveScoreBtn" style="margin-top:12px;padding:10px 28px;font-size:13px;">SAVE SCORE</button>
+    </div>
+    <div id="leaderboard" style="width:100%;max-width:340px;margin-bottom:20px;"></div>
     <button class="btn" id="retryBtn">RETRY ACER</button>
   </div>
 </div>
+
 <script>
 (function(){
   const c=document.getElementById('stars');
@@ -114,9 +134,7 @@ function getWaveConfig(w){
 }
 
 function spawnAlien(cfg){
-  const big=Math.random()<cfg.bigAlienChance;
-  const fast=!big&&Math.random()<cfg.fastAlienChance;
-  const lane=Math.random()<0.5?-1:1;
+  const big=Math.random()<cfg.bigAlienChance,fast=!big&&Math.random()<cfg.fastAlienChance,lane=Math.random()<0.5?-1:1;
   aliens.push({x:lane===-1?-40:W+40,y:300+Math.random()*180,tx:80+Math.random()*(W-160),ty:300+Math.random()*180,phase:'approach',speed:fast?cfg.speed*1.7:big?cfg.speed*0.6:cfg.speed,hp:big?cfg.hp*2:cfg.hp,maxHp:big?cfg.hp*2:cfg.hp,big,fast,size:big?36:fast?20:28,wobble:Math.random()*Math.PI*2,wobbleSpeed:1.5+Math.random(),color:fast?'#ff4488':big?'#ff8800':'#7fff7f',score:big?cfg.scorePerKill*3:fast?cfg.scorePerKill*2:cfg.scorePerKill,attackTimer:0,beam:null});
 }
 
@@ -126,15 +144,11 @@ function spawnParticles(x,y,color,count=12){
 
 function spawnExplosion(x,y,radius,color){explosions.push({x,y,radius,maxRadius:radius,life:1,color});}
 
-function clientToCanvas(ex,ey){
-  const rect=canvas.getBoundingClientRect();
-  return{x:(ex-rect.left)*(W/rect.width),y:(ey-rect.top)*(H/rect.height)};
-}
+function clientToCanvas(ex,ey){const rect=canvas.getBoundingClientRect();return{x:(ex-rect.left)*(W/rect.width),y:(ey-rect.top)*(H/rect.height)};}
 
 function handleShoot(cx,cy){
   if(state!=='playing'||ammo<=0||reloading)return;
-  ammo--;throwing=true;throwAnim=0;updateAmmoBar();
-  sfxThrow();
+  ammo--;throwing=true;throwAnim=0;updateAmmoBar();sfxThrow();
   const dx=cx-squachX,dy=cy-(H-80),dist=Math.sqrt(dx*dx+dy*dy);
   stones.push({x:squachX,y:H-80,vx:(dx/dist)*520,vy:(dy/dist)*520,trail:[],age:0});
   if(ammo===0){reloading=true;reloadTimer=Math.max(0.8,2.5-wave*0.08);}
@@ -156,8 +170,7 @@ function startGame(){
   const cfg=getWaveConfig(wave);waveGoal=cfg.goal;waveKills=0;waveAliens=0;
   ['startScreen','gameOverScreen','levelScreen'].forEach(id=>document.getElementById(id).style.display='none');
   state='playing';updateHUD();updateAmmoBar();showWaveBanner('WAVE 1 — BEGIN');
-  startMusic();
-  lastTime=performance.now();requestAnimationFrame(loop);
+  startMusic();lastTime=performance.now();requestAnimationFrame(loop);
 }
 
 function nextWave(){
@@ -168,18 +181,53 @@ function nextWave(){
   lastTime=performance.now();requestAnimationFrame(loop);
 }
 
+// ─── LEADERBOARD ─────────────────────────────────────────────────────────
+function getScores(){try{return JSON.parse(localStorage.getItem('squach_scores')||'[]');}catch(e){return[];}}
+function saveScores(s){localStorage.setItem('squach_scores',JSON.stringify(s));}
+
+function addScore(name,sc,wv){
+  const scores=getScores();
+  scores.push({name:name.toUpperCase().trim()||'ACER',score:sc,wave:wv,date:Date.now()});
+  scores.sort((a,b)=>b.score-a.score);
+  const trimmed=scores.slice(0,10);saveScores(trimmed);return trimmed;
+}
+
+function isHighScore(sc){const s=getScores();return s.length<10||sc>s[s.length-1].score;}
+
+function renderLeaderboard(containerId,highlightScore=null){
+  const scores=getScores(),el=document.getElementById(containerId);
+  if(!el)return;
+  if(scores.length===0){el.innerHTML='<div class="lb-title" style="color:#444;">NO SCORES YET — BE FIRST</div>';return;}
+  const medals=['gold','silver','bronze'];
+  el.innerHTML='<div class="lb-title">HALL OF HUNTERS</div>'+scores.map((s,i)=>{
+    const cls=medals[i]||(s.score===highlightScore?'highlight':'normal');
+    const rank=i===0?'👑':'#'+(i+1);
+    return`<div class="lb-row ${cls}"><span class="lb-rank">${rank}</span><span class="lb-name">${s.name}</span><span class="lb-score">${s.score.toLocaleString()}</span><span class="lb-wave">W${s.wave}</span></div>`;
+  }).join('');
+}
+
 function gameOver(){
-  state='gameover';
-  stopMusic();sfxGameOver();
+  state='gameover';stopMusic();sfxGameOver();
   if(score>highScore){highScore=score;localStorage.setItem('squach_hs',highScore);}
-  document.getElementById('finalScore').textContent=score;
-  document.getElementById('hsFinal').textContent=highScore;
+  document.getElementById('finalScore').textContent=score.toLocaleString();
   document.getElementById('gameOverScreen').style.display='flex';
+  const ns=document.getElementById('nameEntrySection'),inp=document.getElementById('playerNameInput');
+  if(isHighScore(score)&&score>0){
+    ns.style.display='flex';inp.value='';setTimeout(()=>inp.focus(),300);renderLeaderboard('leaderboard',null);
+  }else{
+    ns.style.display='none';renderLeaderboard('leaderboard',score);
+  }
+}
+
+function submitScore(){
+  const name=document.getElementById('playerNameInput').value.trim()||'ACER';
+  addScore(name,score,wave);
+  document.getElementById('nameEntrySection').style.display='none';
+  renderLeaderboard('leaderboard',score);sfxWaveClear();
 }
 
 function levelUp(){
-  state='levelup';
-  sfxWaveClear();
+  state='levelup';sfxWaveClear();
   const msgs=['Faster aliens incoming.\nStay sharp, Acer.','They\'re angrier now.\nHold the line.','Bigger ships detected.\nAim true.','They\'ve called reinforcements.\nDon\'t flinch.','Maximum alert.\nThe forest needs you.'];
   document.getElementById('levelBadge').textContent='WAVE '+(wave+1);
   document.getElementById('levelDesc').textContent=msgs[Math.min(wave,msgs.length-1)];
@@ -191,9 +239,7 @@ function drawBackground(t){
   const ground=ctx.createLinearGradient(0,H*0.65,0,H);ground.addColorStop(0,'#0a1f0a');ground.addColorStop(1,'#050f05');ctx.fillStyle=ground;ctx.fillRect(0,H*0.65,W,H*0.35);
   ctx.strokeStyle='#1a4a1a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,H*0.65);ctx.lineTo(W,H*0.65);ctx.stroke();
   drawTrees(t);
-  ctx.save();ctx.shadowBlur=30;ctx.shadowColor='#aaccff';ctx.fillStyle='#ddeeff';
-  ctx.beginPath();ctx.arc(W*0.78,120,28,0,Math.PI*2);ctx.fill();
-  ctx.shadowBlur=0;ctx.restore();
+  ctx.save();ctx.shadowBlur=30;ctx.shadowColor='#aaccff';ctx.fillStyle='#ddeeff';ctx.beginPath();ctx.arc(W*0.78,120,28,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.restore();
 }
 
 function drawTrees(t){
@@ -217,8 +263,7 @@ function drawSquach(t){
   ctx.fillStyle='rgba(0,0,0,0.4)';ctx.beginPath();ctx.ellipse(0,10,25,8,0,0,Math.PI*2);ctx.fill();
   ctx.fillStyle='#3a2a1a';ctx.beginPath();ctx.ellipse(0,-30,20,30,0,0,Math.PI*2);ctx.fill();
   ctx.fillStyle='#4a3522';ctx.beginPath();ctx.arc(0,-65,18,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#FFD700';ctx.shadowBlur=8;ctx.shadowColor='#FFD700';
-  ctx.beginPath();ctx.arc(-6,-67,3.5,0,Math.PI*2);ctx.arc(6,-67,3.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+  ctx.fillStyle='#FFD700';ctx.shadowBlur=8;ctx.shadowColor='#FFD700';ctx.beginPath();ctx.arc(-6,-67,3.5,0,Math.PI*2);ctx.arc(6,-67,3.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
   ctx.fillStyle='#3a2a1a';ctx.save();ctx.translate(16+(throwing?throwOffset:0),-45);
   if(throwing)ctx.rotate(throwOffset*0.06);
   ctx.beginPath();ctx.ellipse(0,0,8,20,-0.3,0,Math.PI*2);ctx.fill();
@@ -275,14 +320,10 @@ function update(dt,t){
   if(treeDamageFlash>0)treeDamageFlash-=dt*3;
   if(reloading){reloadTimer-=dt;if(reloadTimer<=0){reloading=false;ammo=maxAmmo;updateAmmoBar();}}
 
-  const cfg=getWaveConfig(wave);
-  const spawnCap=waveGoal+3;
+  const cfg=getWaveConfig(wave),spawnCap=waveGoal+3;
   if(waveAliens<spawnCap){spawnTimer-=dt;if(spawnTimer<=0){spawnAlien(cfg);waveAliens++;spawnTimer=cfg.spawnRate*(0.7+Math.random()*0.6);}}
 
-  if(state==='playing'&&waveAliens>=spawnCap&&aliens.length===0){
-    state='levelup_pending';
-    setTimeout(levelUp,800);
-  }
+  if(state==='playing'&&waveAliens>=spawnCap&&aliens.length===0){state='levelup_pending';setTimeout(levelUp,800);}
 
   for(let i=aliens.length-1;i>=0;i--){
     const a=aliens[i];a.wobble+=dt;
@@ -296,8 +337,7 @@ function update(dt,t){
       a.attackTimer-=dt;
       if(a.attackTimer<=0){
         trees--;treeDamageFlash=1;screenShake=0.5;updateHUD();
-        spawnParticles(a.x,H*0.65,'#00ff44',20);spawnExplosion(a.x,H*0.65,60,'#00ff44');
-        sfxTreeHit();
+        spawnParticles(a.x,H*0.65,'#00ff44',20);spawnExplosion(a.x,H*0.65,60,'#00ff44');sfxTreeHit();
         a.beam=false;aliens.splice(i,1);waveKills++;
         if(trees<=0){gameOver();return;}
       }
@@ -312,13 +352,8 @@ function update(dt,t){
     for(let j=aliens.length-1;j>=0;j--){
       const a=aliens[j];
       if(Math.sqrt((s.x-a.x)**2+(s.y-a.y)**2)<a.size+6){
-        a.hp--;sfxHit();
-        spawnParticles(s.x,s.y,a.color,a.big?20:12);
-        if(a.hp<=0){
-          sfxExplode();
-          spawnExplosion(a.x,a.y,a.big?70:45,a.color);spawnParticles(a.x,a.y,a.color,a.big?30:18);
-          score+=a.score;waveKills++;showScorePopup(a.x,a.y,a.score);aliens.splice(j,1);
-        }
+        a.hp--;sfxHit();spawnParticles(s.x,s.y,a.color,a.big?20:12);
+        if(a.hp<=0){sfxExplode();spawnExplosion(a.x,a.y,a.big?70:45,a.color);spawnParticles(a.x,a.y,a.color,a.big?30:18);score+=a.score;waveKills++;showScorePopup(a.x,a.y,a.score);aliens.splice(j,1);}
         stones.splice(i,1);hit=true;break;
       }
     }
@@ -344,134 +379,50 @@ function loop(timestamp){
 
 // ─── AUDIO ───────────────────────────────────────────────────────────────
 let audioCtx=null,musicNodes={},musicPlaying=false,muteBtn;
-
 function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
-
-function playTone(freq,type,duration,vol=0.3,delay=0){
-  const ac=getAudio(),osc=ac.createOscillator(),gain=ac.createGain();
-  osc.connect(gain);gain.connect(ac.destination);
-  osc.type=type;osc.frequency.setValueAtTime(freq,ac.currentTime+delay);
-  gain.gain.setValueAtTime(0,ac.currentTime+delay);
-  gain.gain.linearRampToValueAtTime(vol,ac.currentTime+delay+0.01);
-  gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+delay+duration);
-  osc.start(ac.currentTime+delay);osc.stop(ac.currentTime+delay+duration+0.05);
-}
-
+function playTone(freq,type,duration,vol=0.3,delay=0){const ac=getAudio(),osc=ac.createOscillator(),gain=ac.createGain();osc.connect(gain);gain.connect(ac.destination);osc.type=type;osc.frequency.setValueAtTime(freq,ac.currentTime+delay);gain.gain.setValueAtTime(0,ac.currentTime+delay);gain.gain.linearRampToValueAtTime(vol,ac.currentTime+delay+0.01);gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+delay+duration);osc.start(ac.currentTime+delay);osc.stop(ac.currentTime+delay+duration+0.05);}
 function sfxThrow(){playTone(200,'sawtooth',0.08,0.15);playTone(400,'sine',0.06,0.1,0.04);}
-
-function sfxHit(){
-  const ac=getAudio(),buf=ac.createBuffer(1,ac.sampleRate*0.12,ac.sampleRate),d=buf.getChannelData(0);
-  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
-  const src=ac.createBufferSource(),gain=ac.createGain(),filter=ac.createBiquadFilter();
-  filter.type='bandpass';filter.frequency.value=800;
-  src.buffer=buf;src.connect(filter);filter.connect(gain);gain.connect(ac.destination);
-  gain.gain.setValueAtTime(0.4,ac.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.12);
-  src.start();src.stop(ac.currentTime+0.15);
-}
-
-function sfxExplode(){
-  const ac=getAudio(),buf=ac.createBuffer(1,ac.sampleRate*0.35,ac.sampleRate),d=buf.getChannelData(0);
-  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,0.6);
-  const src=ac.createBufferSource(),gain=ac.createGain(),filter=ac.createBiquadFilter();
-  filter.type='lowpass';filter.frequency.value=300;
-  src.buffer=buf;src.connect(filter);filter.connect(gain);gain.connect(ac.destination);
-  gain.gain.setValueAtTime(0.6,ac.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.35);
-  src.start();src.stop(ac.currentTime+0.4);
-}
-
+function sfxHit(){const ac=getAudio(),buf=ac.createBuffer(1,ac.sampleRate*0.12,ac.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);const src=ac.createBufferSource(),gain=ac.createGain(),filter=ac.createBiquadFilter();filter.type='bandpass';filter.frequency.value=800;src.buffer=buf;src.connect(filter);filter.connect(gain);gain.connect(ac.destination);gain.gain.setValueAtTime(0.4,ac.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.12);src.start();src.stop(ac.currentTime+0.15);}
+function sfxExplode(){const ac=getAudio(),buf=ac.createBuffer(1,ac.sampleRate*0.35,ac.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,0.6);const src=ac.createBufferSource(),gain=ac.createGain(),filter=ac.createBiquadFilter();filter.type='lowpass';filter.frequency.value=300;src.buffer=buf;src.connect(filter);filter.connect(gain);gain.connect(ac.destination);gain.gain.setValueAtTime(0.6,ac.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.35);src.start();src.stop(ac.currentTime+0.4);}
 function sfxTreeHit(){playTone(80,'sawtooth',0.4,0.5);playTone(60,'sine',0.5,0.3,0.05);}
 function sfxWaveClear(){[523,659,784,1047].forEach((f,i)=>playTone(f,'sine',0.25,0.3,i*0.12));}
 function sfxGameOver(){[400,300,200,100].forEach((f,i)=>playTone(f,'sawtooth',0.4,0.4,i*0.2));}
 
 function startMusic(){
-  if(musicPlaying)return;
-  const ac=getAudio();musicPlaying=true;
+  if(musicPlaying)return;const ac=getAudio();musicPlaying=true;
   const masterGain=ac.createGain();masterGain.gain.value=0.18;masterGain.connect(ac.destination);musicNodes.master=masterGain;
   const BPM=128,step=60/BPM/4;
   const bassNotes=[55,55,82,55,73,55,82,73,55,55,82,55,65,55,82,65];
   let bassStep=0,bassTime=ac.currentTime+0.1;
-  function scheduleBass(){
-    if(!musicPlaying)return;
-    while(bassTime<ac.currentTime+0.4){
-      const freq=bassNotes[bassStep%bassNotes.length],osc=ac.createOscillator(),gain=ac.createGain(),filter=ac.createBiquadFilter();
-      filter.type='lowpass';filter.frequency.value=400;osc.type='sawtooth';osc.frequency.value=freq;
-      osc.connect(filter);filter.connect(gain);gain.connect(masterGain);
-      gain.gain.setValueAtTime(0,bassTime);gain.gain.linearRampToValueAtTime(0.6,bassTime+0.01);gain.gain.exponentialRampToValueAtTime(0.001,bassTime+step*1.8);
-      osc.start(bassTime);osc.stop(bassTime+step*2);bassStep++;bassTime+=step*2;
-    }
-    musicNodes.bassTimer=setTimeout(scheduleBass,150);
-  }
+  function scheduleBass(){if(!musicPlaying)return;while(bassTime<ac.currentTime+0.4){const freq=bassNotes[bassStep%bassNotes.length],osc=ac.createOscillator(),gain=ac.createGain(),filter=ac.createBiquadFilter();filter.type='lowpass';filter.frequency.value=400;osc.type='sawtooth';osc.frequency.value=freq;osc.connect(filter);filter.connect(gain);gain.connect(masterGain);gain.gain.setValueAtTime(0,bassTime);gain.gain.linearRampToValueAtTime(0.6,bassTime+0.01);gain.gain.exponentialRampToValueAtTime(0.001,bassTime+step*1.8);osc.start(bassTime);osc.stop(bassTime+step*2);bassStep++;bassTime+=step*2;}musicNodes.bassTimer=setTimeout(scheduleBass,150);}
   const arpNotes=[220,277,330,415,330,277,220,165,196,247,330,392,330,247,196,165];
   let arpStep=0,arpTime=ac.currentTime+0.1;
-  function scheduleArp(){
-    if(!musicPlaying)return;
-    while(arpTime<ac.currentTime+0.4){
-      const freq=arpNotes[arpStep%arpNotes.length],osc=ac.createOscillator(),gain=ac.createGain();
-      osc.type='square';osc.frequency.value=freq;osc.connect(gain);gain.connect(masterGain);
-      gain.gain.setValueAtTime(0,arpTime);gain.gain.linearRampToValueAtTime(0.25,arpTime+0.005);gain.gain.exponentialRampToValueAtTime(0.001,arpTime+step*0.85);
-      osc.start(arpTime);osc.stop(arpTime+step);arpStep++;arpTime+=step;
-    }
-    musicNodes.arpTimer=setTimeout(scheduleArp,150);
-  }
+  function scheduleArp(){if(!musicPlaying)return;while(arpTime<ac.currentTime+0.4){const freq=arpNotes[arpStep%arpNotes.length],osc=ac.createOscillator(),gain=ac.createGain();osc.type='square';osc.frequency.value=freq;osc.connect(gain);gain.connect(masterGain);gain.gain.setValueAtTime(0,arpTime);gain.gain.linearRampToValueAtTime(0.25,arpTime+0.005);gain.gain.exponentialRampToValueAtTime(0.001,arpTime+step*0.85);osc.start(arpTime);osc.stop(arpTime+step);arpStep++;arpTime+=step;}musicNodes.arpTimer=setTimeout(scheduleArp,150);}
   let kickTime=ac.currentTime+0.1;
-  function scheduleKick(){
-    if(!musicPlaying)return;
-    while(kickTime<ac.currentTime+0.4){
-      const osc=ac.createOscillator(),gain=ac.createGain();osc.type='sine';
-      osc.frequency.setValueAtTime(160,kickTime);osc.frequency.exponentialRampToValueAtTime(40,kickTime+0.08);
-      osc.connect(gain);gain.connect(masterGain);
-      gain.gain.setValueAtTime(1.2,kickTime);gain.gain.exponentialRampToValueAtTime(0.001,kickTime+0.25);
-      osc.start(kickTime);osc.stop(kickTime+0.3);kickTime+=step*8;
-    }
-    musicNodes.kickTimer=setTimeout(scheduleKick,150);
-  }
+  function scheduleKick(){if(!musicPlaying)return;while(kickTime<ac.currentTime+0.4){const osc=ac.createOscillator(),gain=ac.createGain();osc.type='sine';osc.frequency.setValueAtTime(160,kickTime);osc.frequency.exponentialRampToValueAtTime(40,kickTime+0.08);osc.connect(gain);gain.connect(masterGain);gain.gain.setValueAtTime(1.2,kickTime);gain.gain.exponentialRampToValueAtTime(0.001,kickTime+0.25);osc.start(kickTime);osc.stop(kickTime+0.3);kickTime+=step*8;}musicNodes.kickTimer=setTimeout(scheduleKick,150);}
   let hatTime=ac.currentTime+0.1;
-  function scheduleHat(){
-    if(!musicPlaying)return;
-    while(hatTime<ac.currentTime+0.4){
-      const buf=ac.createBuffer(1,ac.sampleRate*0.04,ac.sampleRate),d=buf.getChannelData(0);
-      for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
-      const src=ac.createBufferSource(),gain=ac.createGain(),filter=ac.createBiquadFilter();
-      filter.type='highpass';filter.frequency.value=8000;
-      src.buffer=buf;src.connect(filter);filter.connect(gain);gain.connect(masterGain);
-      gain.gain.setValueAtTime(0.3,hatTime);gain.gain.exponentialRampToValueAtTime(0.001,hatTime+0.04);
-      src.start(hatTime);src.stop(hatTime+0.05);hatTime+=step*2;
-    }
-    musicNodes.hatTimer=setTimeout(scheduleHat,150);
-  }
+  function scheduleHat(){if(!musicPlaying)return;while(hatTime<ac.currentTime+0.4){const buf=ac.createBuffer(1,ac.sampleRate*0.04,ac.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const src=ac.createBufferSource(),gain=ac.createGain(),filter=ac.createBiquadFilter();filter.type='highpass';filter.frequency.value=8000;src.buffer=buf;src.connect(filter);filter.connect(gain);gain.connect(masterGain);gain.gain.setValueAtTime(0.3,hatTime);gain.gain.exponentialRampToValueAtTime(0.001,hatTime+0.04);src.start(hatTime);src.stop(hatTime+0.05);hatTime+=step*2;}musicNodes.hatTimer=setTimeout(scheduleHat,150);}
   scheduleBass();scheduleArp();scheduleKick();scheduleHat();
 }
 
-function stopMusic(){
-  musicPlaying=false;
-  clearTimeout(musicNodes.bassTimer);clearTimeout(musicNodes.arpTimer);
-  clearTimeout(musicNodes.kickTimer);clearTimeout(musicNodes.hatTimer);
-  if(musicNodes.master){try{musicNodes.master.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);}catch(e){}}
-  musicNodes={};
-}
-
-function toggleMute(){
-  if(musicPlaying){stopMusic();muteBtn.textContent='🔇';}
-  else{startMusic();muteBtn.textContent='🔊';}
-}
+function stopMusic(){musicPlaying=false;clearTimeout(musicNodes.bassTimer);clearTimeout(musicNodes.arpTimer);clearTimeout(musicNodes.kickTimer);clearTimeout(musicNodes.hatTimer);if(musicNodes.master){try{musicNodes.master.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);}catch(e){}}musicNodes={};}
+function toggleMute(){if(musicPlaying){stopMusic();muteBtn.textContent='🔇';}else{startMusic();muteBtn.textContent='🔊';}}
 
 // ─── INIT ─────────────────────────────────────────────────────────────────
 document.getElementById('startBtn').onclick=startGame;
 document.getElementById('retryBtn').onclick=startGame;
 document.getElementById('nextWaveBtn').onclick=nextWave;
+document.getElementById('saveScoreBtn').onclick=submitScore;
+document.getElementById('playerNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')submitScore();});
 
-muteBtn=document.createElement('button');
-muteBtn.textContent='🔊';
-muteBtn.style.cssText='position:absolute;top:10px;right:10px;z-index:50;background:rgba(0,0,0,0.5);border:1px solid #C9A84C;color:#FFD700;font-size:16px;padding:4px 8px;cursor:pointer;border-radius:4px;';
-muteBtn.onclick=toggleMute;
-document.getElementById('gameContainer').appendChild(muteBtn);
+(function(){const div=document.createElement('div');div.style.cssText='position:absolute;bottom:55px;left:0;right:0;padding:0 16px;pointer-events:none;';div.id='startLeaderboard';document.getElementById('startScreen').appendChild(div);renderLeaderboard('startLeaderboard');})();
+
+muteBtn=document.createElement('button');muteBtn.textContent='🔊';muteBtn.style.cssText='position:absolute;top:10px;right:10px;z-index:50;background:rgba(0,0,0,0.5);border:1px solid #C9A84C;color:#FFD700;font-size:16px;padding:4px 8px;cursor:pointer;border-radius:4px;';muteBtn.onclick=toggleMute;document.getElementById('gameContainer').appendChild(muteBtn);
 
 document.getElementById('hsStart').textContent=highScore;
 updateAmmoBar();
 
-(function titleDraw(ts){
-  if(state!=='start')return;ctx.clearRect(0,0,W,H);drawBackground(ts/1000);requestAnimationFrame(titleDraw);
-})(0);
+(function titleDraw(ts){if(state!=='start')return;ctx.clearRect(0,0,W,H);drawBackground(ts/1000);requestAnimationFrame(titleDraw);})(0);
 </script>
 </body>
 </html>
