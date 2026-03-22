@@ -32,10 +32,10 @@
   .btn::before{content:'';position:absolute;inset:0;background:var(--gold);opacity:0;transition:opacity 0.2s;}
   .btn:hover::before{opacity:0.15;}
   .btn:active{transform:scale(0.96);}
-  .over-title{font-family:'Black Ops One',cursive;font-size:42px;color:var(--red);text-shadow:0 0 30px var(--red);margin-bottom:4px;}
-  .over-sub{font-size:13px;color:#666;letter-spacing:3px;margin-bottom:12px;}
-  .score-display{font-family:'Black Ops One',cursive;font-size:52px;color:var(--gold-bright);text-shadow:0 0 20px var(--gold);margin-bottom:2px;}
-  .score-label{font-size:11px;letter-spacing:4px;color:#666;margin-bottom:16px;}
+  .over-title{font-family:'Black Ops One',cursive;font-size:42px;color:var(--red);text-shadow:0 0 30px var(--red);margin-bottom:8px;}
+  .over-sub{font-size:13px;color:#666;letter-spacing:3px;margin-bottom:24px;}
+  .score-display{font-family:'Black Ops One',cursive;font-size:52px;color:var(--gold-bright);text-shadow:0 0 20px var(--gold);margin-bottom:4px;}
+  .score-label{font-size:11px;letter-spacing:4px;color:#666;margin-bottom:28px;}
   .level-badge{font-family:'Black Ops One',cursive;font-size:56px;color:var(--gold-bright);text-shadow:0 0 30px var(--gold);animation:pulse 0.6s ease-in-out infinite alternate;}
   @keyframes pulse{from{transform:scale(1);}to{transform:scale(1.05);text-shadow:0 0 50px var(--gold);}}
   .level-desc{font-size:13px;color:#999;letter-spacing:2px;margin:12px 0 28px;line-height:1.7;}
@@ -75,20 +75,24 @@
   <canvas id="gameCanvas"></canvas>
   <div id="ammoBar"></div>
   <div id="waveBanner"></div>
-  <div class="screen" id="startScreen">
+
+  <div class="screen" id="startScreen" style="justify-content:flex-start;padding-top:30px;overflow-y:auto;">
     <div class="logo">SQUACHACERS</div>
     <div class="subtitle">INVASION</div>
     <div class="bigfoot-art">🦶</div>
     <div class="game-desc">ALIENS ARE ATTACKING THE FOREST<br>HURL STONES. PROTECT THE TREES.<br>SURVIVE THE WAVES.</div>
     <button class="btn" id="startBtn">BEGIN THE HUNT</button>
-    <div id="highScoreDisplay">BEST: <span id="hsStart">0</span></div>
+    <div id="highScoreDisplay" style="margin-bottom:12px;">BEST: <span id="hsStart">0</span></div>
+    <div id="startLeaderboard" style="width:100%;max-width:340px;margin-top:8px;"></div>
   </div>
+
   <div class="screen" id="levelScreen">
     <div class="hud-label" style="letter-spacing:4px;margin-bottom:8px;">WAVE CLEARED</div>
     <div class="level-badge" id="levelBadge">WAVE 2</div>
     <div class="level-desc" id="levelDesc">Faster aliens incoming.<br>Stay sharp, Acer.</div>
     <button class="btn" id="nextWaveBtn">KEEP HUNTING</button>
   </div>
+
   <div class="screen" id="gameOverScreen">
     <div class="over-title">OVERRUN</div>
     <div class="over-sub">THE FOREST HAS FALLEN</div>
@@ -418,7 +422,7 @@ document.getElementById('nextWaveBtn').onclick=nextWave;
 document.getElementById('saveScoreBtn').onclick=submitScore;
 document.getElementById('playerNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')submitScore();});
 
-(function(){const div=document.createElement('div');div.style.cssText='position:absolute;bottom:55px;left:0;right:0;padding:0 16px;pointer-events:none;';div.id='startLeaderboard';document.getElementById('startScreen').appendChild(div);renderLeaderboard('startLeaderboard');})();
+renderLeaderboard('startLeaderboard');
 
 muteBtn=document.createElement('button');muteBtn.textContent='🔊';muteBtn.style.cssText='position:absolute;top:10px;right:10px;z-index:50;background:rgba(0,0,0,0.5);border:1px solid #C9A84C;color:#FFD700;font-size:16px;padding:4px 8px;cursor:pointer;border-radius:4px;';muteBtn.onclick=toggleMute;document.getElementById('gameContainer').appendChild(muteBtn);
 
