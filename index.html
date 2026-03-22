@@ -6,10 +6,7 @@
 <title>SquachAcers: Invasion</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold:#C9A84C;--gold-bright:#FFD700;--dark:#0a0a14;--deep:#050510;
-    --green:#1a3a1a;--alien:#7fff7f;--alien-dark:#00aa44;--red:#ff3333;--sky:#0d1a3a;
-  }
+  :root{--gold:#C9A84C;--gold-bright:#FFD700;--dark:#0a0a14;--deep:#050510;--green:#1a3a1a;--alien:#7fff7f;--alien-dark:#00aa44;--red:#ff3333;--sky:#0d1a3a;}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--deep);font-family:'Exo 2',sans-serif;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;width:100vw;user-select:none;touch-action:none;}
   #gameContainer{position:relative;width:min(500px,100vw);height:min(700px,100vh);overflow:hidden;}
@@ -78,7 +75,6 @@
   <canvas id="gameCanvas"></canvas>
   <div id="ammoBar"></div>
   <div id="waveBanner"></div>
-
   <div class="screen" id="startScreen">
     <div class="logo">SQUACHACERS</div>
     <div class="subtitle">INVASION</div>
@@ -87,14 +83,12 @@
     <button class="btn" id="startBtn">BEGIN THE HUNT</button>
     <div id="highScoreDisplay">BEST: <span id="hsStart">0</span></div>
   </div>
-
   <div class="screen" id="levelScreen">
     <div class="hud-label" style="letter-spacing:4px;margin-bottom:8px;">WAVE CLEARED</div>
     <div class="level-badge" id="levelBadge">WAVE 2</div>
     <div class="level-desc" id="levelDesc">Faster aliens incoming.<br>Stay sharp, Acer.</div>
     <button class="btn" id="nextWaveBtn">KEEP HUNTING</button>
   </div>
-
   <div class="screen" id="gameOverScreen">
     <div class="over-title">OVERRUN</div>
     <div class="over-sub">THE FOREST HAS FALLEN</div>
@@ -109,6 +103,43 @@
     <button class="btn" id="retryBtn">RETRY ACER</button>
   </div>
 </div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getDatabase, ref, push, query, orderByChild, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCSBF47ibk5F0TCZ1DvwZb7-0cG1BImDd4",
+    authDomain: "squachacers.firebaseapp.com",
+    databaseURL: "https://squachacers-default-rtdb.firebaseio.com",
+    projectId: "squachacers",
+    storageBucket: "squachacers.firebasestorage.app",
+    messagingSenderId: "305836513755",
+    appId: "1:305836513755:web:2d9a412923e817a6ee2ffe"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window._fbListenScores = function(callback) {
+    const scoresRef = query(ref(db, 'scores'), orderByChild('score'), limitToLast(10));
+    onValue(scoresRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) { callback([]); return; }
+      callback(Object.values(data).sort((a,b) => b.score - a.score));
+    });
+  };
+
+  window._fbSubmitScore = function(name, score, wave) {
+    push(ref(db, 'scores'), {
+      name: name.toUpperCase().trim() || 'ACER',
+      score, wave, date: Date.now()
+    });
+  };
+
+  document.dispatchEvent(new Event('firebaseReady'));
+</script>
 
 <script>
 (function(){
@@ -129,22 +160,16 @@ let squachX=W/2,squachAnim=0,throwing=false,throwAnim=0;
 let highScore=parseInt(localStorage.getItem('squach_hs')||'0');
 let treeDamageFlash=0,screenShake=0;
 
-function getWaveConfig(w){
-  return{goal:8+w*4,spawnRate:Math.max(0.4,1.8-w*0.12),speed:Math.min(90,28+w*7),hp:Math.min(5,1+Math.floor(w/3)),bigAlienChance:Math.min(0.35,w*0.04),fastAlienChance:Math.min(0.4,w*0.05),scorePerKill:10+w*5};
-}
+function getWaveConfig(w){return{goal:8+w*4,spawnRate:Math.max(0.4,1.8-w*0.12),speed:Math.min(90,28+w*7),hp:Math.min(5,1+Math.floor(w/3)),bigAlienChance:Math.min(0.35,w*0.04),fastAlienChance:Math.min(0.4,w*0.05),scorePerKill:10+w*5};}
 
 function spawnAlien(cfg){
   const big=Math.random()<cfg.bigAlienChance,fast=!big&&Math.random()<cfg.fastAlienChance,lane=Math.random()<0.5?-1:1;
   aliens.push({x:lane===-1?-40:W+40,y:300+Math.random()*180,tx:80+Math.random()*(W-160),ty:300+Math.random()*180,phase:'approach',speed:fast?cfg.speed*1.7:big?cfg.speed*0.6:cfg.speed,hp:big?cfg.hp*2:cfg.hp,maxHp:big?cfg.hp*2:cfg.hp,big,fast,size:big?36:fast?20:28,wobble:Math.random()*Math.PI*2,wobbleSpeed:1.5+Math.random(),color:fast?'#ff4488':big?'#ff8800':'#7fff7f',score:big?cfg.scorePerKill*3:fast?cfg.scorePerKill*2:cfg.scorePerKill,attackTimer:0,beam:null});
 }
 
-function spawnParticles(x,y,color,count=12){
-  for(let i=0;i<count;i++){const a=(Math.PI*2*i)/count+Math.random()*0.5,sp=50+Math.random()*120;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,decay:0.8+Math.random()*0.6,size:2+Math.random()*4,color});}
-}
-
+function spawnParticles(x,y,color,count=12){for(let i=0;i<count;i++){const a=(Math.PI*2*i)/count+Math.random()*0.5,sp=50+Math.random()*120;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,decay:0.8+Math.random()*0.6,size:2+Math.random()*4,color});}}
 function spawnExplosion(x,y,radius,color){explosions.push({x,y,radius,maxRadius:radius,life:1,color});}
-
-function clientToCanvas(ex,ey){const rect=canvas.getBoundingClientRect();return{x:(ex-rect.left)*(W/rect.width),y:(ey-rect.top)*(H/rect.height)};}
+function clientToCanvas(ex,ey){const r=canvas.getBoundingClientRect();return{x:(ex-r.left)*(W/r.width),y:(ey-r.top)*(H/r.height)};}
 
 function handleShoot(cx,cy){
   if(state!=='playing'||ammo<=0||reloading)return;
@@ -182,24 +207,17 @@ function nextWave(){
 }
 
 // ─── LEADERBOARD ─────────────────────────────────────────────────────────
-function getScores(){try{return JSON.parse(localStorage.getItem('squach_scores')||'[]');}catch(e){return[];}}
-function saveScores(s){localStorage.setItem('squach_scores',JSON.stringify(s));}
-
-function addScore(name,sc,wv){
-  const scores=getScores();
-  scores.push({name:name.toUpperCase().trim()||'ACER',score:sc,wave:wv,date:Date.now()});
-  scores.sort((a,b)=>b.score-a.score);
-  const trimmed=scores.slice(0,10);saveScores(trimmed);return trimmed;
-}
-
-function isHighScore(sc){const s=getScores();return s.length<10||sc>s[s.length-1].score;}
+let globalScores=[];
+function getLocalScores(){try{return JSON.parse(localStorage.getItem('squach_scores')||'[]');}catch(e){return[];}}
+function saveLocalScores(s){localStorage.setItem('squach_scores',JSON.stringify(s));}
+function isHighScore(sc){const s=globalScores.length>0?globalScores:getLocalScores();return s.length<10||sc>(s[s.length-1]?.score||0);}
 
 function renderLeaderboard(containerId,highlightScore=null){
-  const scores=getScores(),el=document.getElementById(containerId);
-  if(!el)return;
+  const scores=globalScores.length>0?globalScores:getLocalScores();
+  const el=document.getElementById(containerId);if(!el)return;
   if(scores.length===0){el.innerHTML='<div class="lb-title" style="color:#444;">NO SCORES YET — BE FIRST</div>';return;}
   const medals=['gold','silver','bronze'];
-  el.innerHTML='<div class="lb-title">HALL OF HUNTERS</div>'+scores.map((s,i)=>{
+  el.innerHTML='<div class="lb-title">🌍 HALL OF ACERS</div>'+scores.map((s,i)=>{
     const cls=medals[i]||(s.score===highlightScore?'highlight':'normal');
     const rank=i===0?'👑':'#'+(i+1);
     return`<div class="lb-row ${cls}"><span class="lb-rank">${rank}</span><span class="lb-name">${s.name}</span><span class="lb-score">${s.score.toLocaleString()}</span><span class="lb-wave">W${s.wave}</span></div>`;
@@ -212,19 +230,22 @@ function gameOver(){
   document.getElementById('finalScore').textContent=score.toLocaleString();
   document.getElementById('gameOverScreen').style.display='flex';
   const ns=document.getElementById('nameEntrySection'),inp=document.getElementById('playerNameInput');
-  if(isHighScore(score)&&score>0){
-    ns.style.display='flex';inp.value='';setTimeout(()=>inp.focus(),300);renderLeaderboard('leaderboard',null);
-  }else{
-    ns.style.display='none';renderLeaderboard('leaderboard',score);
-  }
+  if(isHighScore(score)&&score>0){ns.style.display='flex';inp.value='';setTimeout(()=>inp.focus(),300);renderLeaderboard('leaderboard',null);}
+  else{ns.style.display='none';renderLeaderboard('leaderboard',score);}
 }
 
 function submitScore(){
   const name=document.getElementById('playerNameInput').value.trim()||'ACER';
-  addScore(name,score,wave);
+  if(window._fbSubmitScore)window._fbSubmitScore(name,score,wave);
+  const local=getLocalScores();local.push({name:name.toUpperCase(),score,wave,date:Date.now()});
+  local.sort((a,b)=>b.score-a.score);saveLocalScores(local.slice(0,10));
   document.getElementById('nameEntrySection').style.display='none';
   renderLeaderboard('leaderboard',score);sfxWaveClear();
 }
+
+document.addEventListener('firebaseReady',()=>{
+  if(window._fbListenScores){window._fbListenScores((scores)=>{globalScores=scores;renderLeaderboard('leaderboard',null);renderLeaderboard('startLeaderboard',null);});}
+});
 
 function levelUp(){
   state='levelup';sfxWaveClear();
@@ -250,9 +271,7 @@ function drawTrees(t){
     if(alive){
       ctx.strokeStyle='#3a2a1a';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(sway,0);ctx.lineTo(sway,-60);ctx.stroke();
       for(let l=0;l<3;l++){ctx.globalAlpha=treeDamageFlash>0?0.5:1;ctx.fillStyle=['#1a4a1a','#226622','#2a7a2a'][l];ctx.beginPath();ctx.arc(sway,-60-l*20,28-l*5,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}
-    }else{
-      ctx.globalAlpha=0.25;ctx.strokeStyle='#332211';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-50);ctx.moveTo(-12,-20);ctx.lineTo(0,-30);ctx.moveTo(12,-35);ctx.lineTo(0,-40);ctx.stroke();ctx.globalAlpha=1;
-    }
+    }else{ctx.globalAlpha=0.25;ctx.strokeStyle='#332211';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-50);ctx.moveTo(-12,-20);ctx.lineTo(0,-30);ctx.moveTo(12,-35);ctx.lineTo(0,-40);ctx.stroke();ctx.globalAlpha=1;}
     ctx.restore();
   }
 }
@@ -322,26 +341,13 @@ function update(dt,t){
 
   const cfg=getWaveConfig(wave),spawnCap=waveGoal+3;
   if(waveAliens<spawnCap){spawnTimer-=dt;if(spawnTimer<=0){spawnAlien(cfg);waveAliens++;spawnTimer=cfg.spawnRate*(0.7+Math.random()*0.6);}}
-
   if(state==='playing'&&waveAliens>=spawnCap&&aliens.length===0){state='levelup_pending';setTimeout(levelUp,800);}
 
   for(let i=aliens.length-1;i>=0;i--){
     const a=aliens[i];a.wobble+=dt;
-    if(a.phase==='approach'){
-      const dx=a.tx-a.x,dy=a.ty-a.y,dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist<5){a.phase='descend';}else{a.x+=(dx/dist)*a.speed*dt;a.y+=(dy/dist)*a.speed*dt*0.5;}
-    }else if(a.phase==='descend'){
-      a.y+=a.speed*dt*0.4;
-      if(a.y>=H*0.65-a.size){a.y=H*0.65-a.size;a.phase='attack';a.beam=true;a.attackTimer=2.5+Math.random();}
-    }else if(a.phase==='attack'){
-      a.attackTimer-=dt;
-      if(a.attackTimer<=0){
-        trees--;treeDamageFlash=1;screenShake=0.5;updateHUD();
-        spawnParticles(a.x,H*0.65,'#00ff44',20);spawnExplosion(a.x,H*0.65,60,'#00ff44');sfxTreeHit();
-        a.beam=false;aliens.splice(i,1);waveKills++;
-        if(trees<=0){gameOver();return;}
-      }
-    }
+    if(a.phase==='approach'){const dx=a.tx-a.x,dy=a.ty-a.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<5){a.phase='descend';}else{a.x+=(dx/dist)*a.speed*dt;a.y+=(dy/dist)*a.speed*dt*0.5;}}
+    else if(a.phase==='descend'){a.y+=a.speed*dt*0.4;if(a.y>=H*0.65-a.size){a.y=H*0.65-a.size;a.phase='attack';a.beam=true;a.attackTimer=2.5+Math.random();}}
+    else if(a.phase==='attack'){a.attackTimer-=dt;if(a.attackTimer<=0){trees--;treeDamageFlash=1;screenShake=0.5;updateHUD();spawnParticles(a.x,H*0.65,'#00ff44',20);spawnExplosion(a.x,H*0.65,60,'#00ff44');sfxTreeHit();a.beam=false;aliens.splice(i,1);waveKills++;if(trees<=0){gameOver();return;}}}
   }
 
   for(let i=stones.length-1;i>=0;i--){
@@ -373,8 +379,7 @@ function loop(timestamp){
   drawBackground(t);drawWaveProgress();drawReloadIndicator();
   explosions.forEach(drawExplosion);aliens.forEach(a=>drawAlien(a,t));
   stones.forEach(drawStone);particles.forEach(drawParticle);drawSquach(t);
-  ctx.restore();
-  requestAnimationFrame(loop);
+  ctx.restore();requestAnimationFrame(loop);
 }
 
 // ─── AUDIO ───────────────────────────────────────────────────────────────
@@ -392,11 +397,9 @@ function startMusic(){
   if(musicPlaying)return;const ac=getAudio();musicPlaying=true;
   const masterGain=ac.createGain();masterGain.gain.value=0.18;masterGain.connect(ac.destination);musicNodes.master=masterGain;
   const BPM=128,step=60/BPM/4;
-  const bassNotes=[55,55,82,55,73,55,82,73,55,55,82,55,65,55,82,65];
-  let bassStep=0,bassTime=ac.currentTime+0.1;
+  const bassNotes=[55,55,82,55,73,55,82,73,55,55,82,55,65,55,82,65];let bassStep=0,bassTime=ac.currentTime+0.1;
   function scheduleBass(){if(!musicPlaying)return;while(bassTime<ac.currentTime+0.4){const freq=bassNotes[bassStep%bassNotes.length],osc=ac.createOscillator(),gain=ac.createGain(),filter=ac.createBiquadFilter();filter.type='lowpass';filter.frequency.value=400;osc.type='sawtooth';osc.frequency.value=freq;osc.connect(filter);filter.connect(gain);gain.connect(masterGain);gain.gain.setValueAtTime(0,bassTime);gain.gain.linearRampToValueAtTime(0.6,bassTime+0.01);gain.gain.exponentialRampToValueAtTime(0.001,bassTime+step*1.8);osc.start(bassTime);osc.stop(bassTime+step*2);bassStep++;bassTime+=step*2;}musicNodes.bassTimer=setTimeout(scheduleBass,150);}
-  const arpNotes=[220,277,330,415,330,277,220,165,196,247,330,392,330,247,196,165];
-  let arpStep=0,arpTime=ac.currentTime+0.1;
+  const arpNotes=[220,277,330,415,330,277,220,165,196,247,330,392,330,247,196,165];let arpStep=0,arpTime=ac.currentTime+0.1;
   function scheduleArp(){if(!musicPlaying)return;while(arpTime<ac.currentTime+0.4){const freq=arpNotes[arpStep%arpNotes.length],osc=ac.createOscillator(),gain=ac.createGain();osc.type='square';osc.frequency.value=freq;osc.connect(gain);gain.connect(masterGain);gain.gain.setValueAtTime(0,arpTime);gain.gain.linearRampToValueAtTime(0.25,arpTime+0.005);gain.gain.exponentialRampToValueAtTime(0.001,arpTime+step*0.85);osc.start(arpTime);osc.stop(arpTime+step);arpStep++;arpTime+=step;}musicNodes.arpTimer=setTimeout(scheduleArp,150);}
   let kickTime=ac.currentTime+0.1;
   function scheduleKick(){if(!musicPlaying)return;while(kickTime<ac.currentTime+0.4){const osc=ac.createOscillator(),gain=ac.createGain();osc.type='sine';osc.frequency.setValueAtTime(160,kickTime);osc.frequency.exponentialRampToValueAtTime(40,kickTime+0.08);osc.connect(gain);gain.connect(masterGain);gain.gain.setValueAtTime(1.2,kickTime);gain.gain.exponentialRampToValueAtTime(0.001,kickTime+0.25);osc.start(kickTime);osc.stop(kickTime+0.3);kickTime+=step*8;}musicNodes.kickTimer=setTimeout(scheduleKick,150);}
