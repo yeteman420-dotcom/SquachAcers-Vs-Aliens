@@ -44,7 +44,7 @@
   @keyframes twinkle{from{opacity:0.1;}to{opacity:0.8;}}
   .score-popup{position:absolute;font-family:'Black Ops One',cursive;font-size:18px;color:var(--gold-bright);pointer-events:none;animation:floatUp 0.9s ease-out forwards;z-index:30;text-shadow:0 0 10px var(--gold);}
   @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-60px) scale(1.3);}}
-  #waveBanner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Black Ops One',cursive;font-size:30px;color:var(--gold-bright);text-shadow:0 0 30px var(--gold);letter-spacing:3px;pointer-events:none;z-index:25;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
+  #waveBanner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Black Ops One',cursive;font-size:28px;color:var(--gold-bright);text-shadow:0 0 30px var(--gold);letter-spacing:3px;pointer-events:none;z-index:25;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
   #waveBanner.show{opacity:1;animation:bannerAnim 2s ease forwards;}
   @keyframes bannerAnim{0%{opacity:0;transform:translate(-50%,-50%) scale(0.7);}20%{opacity:1;transform:translate(-50%,-50%) scale(1.05);}70%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1);}}
   #highScoreDisplay{font-size:12px;color:#555;letter-spacing:2px;margin-top:6px;}
@@ -72,7 +72,6 @@
   <canvas id="gameCanvas"></canvas>
   <div id="ammoBar" style="display:none;"></div>
   <div id="waveBanner"></div>
-
   <div class="screen" id="startScreen" style="justify-content:flex-start;padding-top:30px;overflow-y:auto;">
     <div class="logo">SQUACHACERS</div>
     <div class="subtitle">INVASION</div>
@@ -82,14 +81,12 @@
     <div id="highScoreDisplay" style="margin-bottom:12px;">BEST: <span id="hsStart">0</span></div>
     <div id="startLeaderboard" style="width:100%;max-width:340px;margin-top:8px;"></div>
   </div>
-
   <div class="screen" id="levelScreen">
     <div class="hud-label" style="letter-spacing:4px;margin-bottom:8px;">WAVE CLEARED</div>
     <div class="level-badge" id="levelBadge">WAVE 2</div>
     <div class="level-desc" id="levelDesc">Faster aliens incoming.<br>Stay sharp, Acer.</div>
     <button class="btn" id="nextWaveBtn">KEEP HUNTING</button>
   </div>
-
   <div class="screen" id="gameOverScreen">
     <div class="over-title">OVERRUN</div>
     <div class="over-sub">THE FOREST HAS FALLEN</div>
@@ -109,36 +106,15 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getDatabase, ref, push, query, orderByChild, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyCSBF47ibk5F0TCZ1DvwZb7-0cG1BImDd4",
-    authDomain: "squachacers.firebaseapp.com",
-    databaseURL: "https://squachacers-default-rtdb.firebaseio.com",
-    projectId: "squachacers",
-    storageBucket: "squachacers.firebasestorage.app",
-    messagingSenderId: "305836513755",
-    appId: "1:305836513755:web:2d9a412923e817a6ee2ffe"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  window._fbListenScores = function(callback) {
-    const scoresRef = query(ref(db,'scores'), orderByChild('score'), limitToLast(10));
-    onValue(scoresRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) { callback([]); return; }
-      callback(Object.values(data).sort((a,b) => b.score - a.score));
-    });
-  };
-  window._fbSubmitScore = function(name, score, wave) {
-    push(ref(db,'scores'), { name: name.toUpperCase().trim()||'ACER', score, wave, date: Date.now() });
-  };
+  const firebaseConfig={apiKey:"AIzaSyCSBF47ibk5F0TCZ1DvwZb7-0cG1BImDd4",authDomain:"squachacers.firebaseapp.com",databaseURL:"https://squachacers-default-rtdb.firebaseio.com",projectId:"squachacers",storageBucket:"squachacers.firebasestorage.app",messagingSenderId:"305836513755",appId:"1:305836513755:web:2d9a412923e817a6ee2ffe"};
+  const app=initializeApp(firebaseConfig),db=getDatabase(app);
+  window._fbListenScores=function(cb){const r=query(ref(db,'scores'),orderByChild('score'),limitToLast(10));onValue(r,s=>{const d=s.val();if(!d){cb([]);return;}cb(Object.values(d).sort((a,b)=>b.score-a.score));});};
+  window._fbSubmitScore=function(name,score,wave){push(ref(db,'scores'),{name:name.toUpperCase().trim()||'ACER',score,wave,date:Date.now()});};
   document.dispatchEvent(new Event('firebaseReady'));
 </script>
 
 <script>
-(function(){
-  const c=document.getElementById('stars');
-  for(let i=0;i<80;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2+0.5;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${1.5+Math.random()*3}s;animation-delay:${Math.random()*3}s`;c.appendChild(s);}
-})();
+(function(){const c=document.getElementById('stars');for(let i=0;i<80;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2+0.5;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${1.5+Math.random()*3}s;animation-delay:${Math.random()*3}s`;c.appendChild(s);}})();
 
 const canvas=document.getElementById('gameCanvas');
 const ctx=canvas.getContext('2d');
@@ -146,7 +122,7 @@ const W=500,H=700;
 canvas.width=W;canvas.height=H;
 
 let state='start',score=0,wave=1,trees=5;
-let stones=[],aliens=[],particles=[],explosions=[];
+let stones=[],aliens=[],particles=[],explosions=[],bossBolts=[];
 let lastTime=0,spawnTimer=0,waveAliens=0,waveKills=0,waveGoal=10;
 let squachX=W/2,squachAnim=0,throwing=false,throwAnim=0;
 let highScore=parseInt(localStorage.getItem('squach_hs')||'0');
@@ -155,17 +131,19 @@ let treeDamageFlash=0,screenShake=0;
 function getWaveConfig(w){
   const isBossWave=w%5===0;
   return{
-    goal:isBossWave?1:8+w*4,
-    spawnRate:Math.max(0.3,1.8-w*0.12),
-    speed:Math.min(110,28+w*8),
-    descendSpeed:Math.min(1.2,0.4+w*0.06),
-    hp:Math.min(6,1+Math.floor(w/3)),
-    bigAlienChance:Math.min(0.4,w*0.05),
-    fastAlienChance:Math.min(0.45,w*0.06),
+    goal:isBossWave?1:10+w*5,
+    spawnRate:Math.max(0.2,1.4-w*0.12),
+    speed:Math.min(140,55+w*10),
+    descendSpeed:Math.min(1.5,0.6+w*0.08),
+    hp:Math.min(8,1+Math.floor(w/2)),
+    bigAlienChance:Math.min(0.45,w*0.06),
+    fastAlienChance:Math.min(0.5,w*0.07),
     scorePerKill:10+w*5,
+    dodgeSpeed:Math.min(180,60+w*15),
+    dodgeRadius:Math.min(200,80+w*10),
     isBossWave,
-    entryYMin:Math.max(80,300-w*15),
-    entryYMax:Math.max(200,480-w*15),
+    entryYMin:Math.max(60,280-w*18),
+    entryYMax:Math.max(180,420-w*18),
   };
 }
 
@@ -175,10 +153,11 @@ function spawnAlien(cfg){
 }
 
 function spawnBoss(w){
-  const hp=15+w*3;
-  aliens.push({x:W/2,y:-80,tx:W/2,ty:160,phase:'approach',speed:40+w*5,descendSpeed:0.5,hp,maxHp:hp,big:false,fast:false,boss:true,size:64,wobble:0,wobbleSpeed:0.8,color:'#cc44ff',score:500+w*100,attackTimer:0,beam:null,droneTimer:4});
+  const hp=30+w*5;
+  aliens.push({x:W/2,y:-80,tx:W/2,ty:130,phase:'approach',speed:80+w*8,descendSpeed:0.6,hp,maxHp:hp,big:false,fast:false,boss:true,size:64,wobble:0,wobbleSpeed:0.8,color:'#cc44ff',score:1000+w*200,attackTimer:0,beam:null,droneTimer:Math.max(2,5-w*0.3),boltTimer:Math.max(1.2,3-w*0.2),dodgeVx:0,dodgeSpeed:Math.min(280,100+w*20)});
 }
 
+function spawnBossBolt(x,y){bossBolts.push({x,y,vx:(Math.random()-0.5)*120,vy:200+Math.random()*100,size:8,life:1});}
 function spawnParticles(x,y,color,count=12){for(let i=0;i<count;i++){const a=(Math.PI*2*i)/count+Math.random()*0.5,sp=50+Math.random()*120;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,decay:0.8+Math.random()*0.6,size:2+Math.random()*4,color});}}
 function spawnExplosion(x,y,radius,color){explosions.push({x,y,radius,maxRadius:radius,life:1,color});}
 
@@ -202,7 +181,7 @@ function showScorePopup(x,y,val){const el=document.createElement('div');el.class
 function showWaveBanner(text){const b=document.getElementById('waveBanner');b.textContent=text;b.className='show';setTimeout(()=>b.className='',2100);}
 
 function startGame(){
-  score=0;wave=1;trees=5;stones=[];aliens=[];particles=[];explosions=[];spawnTimer=0;
+  score=0;wave=1;trees=5;stones=[];aliens=[];particles=[];explosions=[];bossBolts=[];spawnTimer=0;
   const cfg=getWaveConfig(wave);waveGoal=cfg.goal;waveKills=0;waveAliens=0;
   ['startScreen','gameOverScreen','levelScreen'].forEach(id=>document.getElementById(id).style.display='none');
   state='playing';updateHUD();showWaveBanner('WAVE 1 — BEGIN');
@@ -210,30 +189,18 @@ function startGame(){
 }
 
 function nextWave(){
-  wave++;stones=[];aliens=[];particles=[];spawnTimer=0;
+  wave++;stones=[];aliens=[];particles=[];bossBolts=[];spawnTimer=0;
   const cfg=getWaveConfig(wave);waveGoal=cfg.goal;waveKills=0;waveAliens=0;
   document.getElementById('levelScreen').style.display='none';
   state='playing';updateHUD();showWaveBanner('WAVE '+wave+(cfg.isBossWave?' — BOSS!':' — INCOMING'));
   lastTime=performance.now();requestAnimationFrame(loop);
 }
 
-// ─── LEADERBOARD ─────────────────────────────────────────────────────────
 let globalScores=[];
 function getLocalScores(){try{return JSON.parse(localStorage.getItem('squach_scores')||'[]');}catch(e){return[];}}
 function saveLocalScores(s){localStorage.setItem('squach_scores',JSON.stringify(s));}
 function isHighScore(sc){const s=globalScores.length>0?globalScores:getLocalScores();return s.length<10||sc>(s[s.length-1]?.score||0);}
-
-function renderLeaderboard(containerId,highlightScore=null){
-  const scores=globalScores.length>0?globalScores:getLocalScores();
-  const el=document.getElementById(containerId);if(!el)return;
-  if(scores.length===0){el.innerHTML='<div class="lb-title" style="color:#444;">NO SCORES YET — BE FIRST</div>';return;}
-  const medals=['gold','silver','bronze'];
-  el.innerHTML='<div class="lb-title">🌍 HALL OF ACERS</div>'+scores.map((s,i)=>{
-    const cls=medals[i]||(s.score===highlightScore?'highlight':'normal');
-    const rank=i===0?'👑':'#'+(i+1);
-    return`<div class="lb-row ${cls}"><span class="lb-rank">${rank}</span><span class="lb-name">${s.name}</span><span class="lb-score">${s.score.toLocaleString()}</span><span class="lb-wave">W${s.wave}</span></div>`;
-  }).join('');
-}
+function renderLeaderboard(containerId,highlightScore=null){const scores=globalScores.length>0?globalScores:getLocalScores();const el=document.getElementById(containerId);if(!el)return;if(scores.length===0){el.innerHTML='<div class="lb-title" style="color:#444;">NO SCORES YET — BE FIRST</div>';return;}const medals=['gold','silver','bronze'];el.innerHTML='<div class="lb-title">🌍 HALL OF ACERS</div>'+scores.map((s,i)=>{const cls=medals[i]||(s.score===highlightScore?'highlight':'normal');const rank=i===0?'👑':'#'+(i+1);return`<div class="lb-row ${cls}"><span class="lb-rank">${rank}</span><span class="lb-name">${s.name}</span><span class="lb-score">${s.score.toLocaleString()}</span><span class="lb-wave">W${s.wave}</span></div>`;}).join('');}
 
 function gameOver(){
   state='gameover';stopMusic();sfxGameOver();
@@ -254,9 +221,7 @@ function submitScore(){
   renderLeaderboard('leaderboard',score);sfxWaveClear();
 }
 
-document.addEventListener('firebaseReady',()=>{
-  if(window._fbListenScores){window._fbListenScores((scores)=>{globalScores=scores;renderLeaderboard('leaderboard',null);renderLeaderboard('startLeaderboard',null);});}
-});
+document.addEventListener('firebaseReady',()=>{if(window._fbListenScores){window._fbListenScores(scores=>{globalScores=scores;renderLeaderboard('leaderboard',null);renderLeaderboard('startLeaderboard',null);});}});
 
 function levelUp(){
   state='levelup';sfxWaveClear();
@@ -341,10 +306,10 @@ function drawParticle(p){ctx.globalAlpha=p.life;ctx.fillStyle=p.color;ctx.shadow
 function drawExplosion(e){ctx.save();ctx.globalAlpha=e.life*0.4;ctx.strokeStyle=e.color;ctx.lineWidth=3;ctx.shadowBlur=20;ctx.shadowColor=e.color;ctx.beginPath();ctx.arc(e.x,e.y,e.maxRadius*(1-e.life),0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.restore();}
 
 function drawWaveProgress(){
-  const cfg=getWaveConfig(wave),spawnCap=cfg.isBossWave?1:waveGoal+3;
-  const bw=W-40,progress=Math.min(1,waveAliens>0?waveKills/spawnCap:0);
+  const bw=W-40,progress=Math.min(1,waveKills/Math.max(1,waveGoal));
   ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fillRect(20,58,bw,4);
-  const grad=ctx.createLinearGradient(20,0,20+bw,0);grad.addColorStop(0,getWaveConfig(wave).isBossWave?'#cc44ff':'#C9A84C');grad.addColorStop(1,getWaveConfig(wave).isBossWave?'#ff88ff':'#FFD700');
+  const isBoss=getWaveConfig(wave).isBossWave;
+  const grad=ctx.createLinearGradient(20,0,20+bw,0);grad.addColorStop(0,isBoss?'#cc44ff':'#C9A84C');grad.addColorStop(1,isBoss?'#ff88ff':'#FFD700');
   ctx.fillStyle=grad;ctx.fillRect(20,58,bw*progress,4);
 }
 
@@ -354,39 +319,39 @@ function update(dt,t){
   if(screenShake>0)screenShake-=dt*5;
   if(treeDamageFlash>0)treeDamageFlash-=dt*3;
 
-  const cfg=getWaveConfig(wave);
-  const spawnCap=waveGoal+3;
-
-  if(cfg.isBossWave){
-    if(waveAliens===0){spawnBoss(wave);waveAliens=spawnCap;}
-  }else{
-    if(waveAliens<spawnCap){spawnTimer-=dt;if(spawnTimer<=0){spawnAlien(cfg);waveAliens++;spawnTimer=cfg.spawnRate*(0.7+Math.random()*0.6);}}
-  }
+  const cfg=getWaveConfig(wave),spawnCap=waveGoal+3;
+  if(cfg.isBossWave){if(waveAliens===0){spawnBoss(wave);waveAliens=spawnCap;}}
+  else{if(waveAliens<spawnCap){spawnTimer-=dt;if(spawnTimer<=0){spawnAlien(cfg);waveAliens++;spawnTimer=cfg.spawnRate*(0.7+Math.random()*0.6);}}}
 
   if(state==='playing'&&waveAliens>=spawnCap&&aliens.length===0){state='levelup_pending';setTimeout(levelUp,800);}
 
   for(let i=aliens.length-1;i>=0;i--){
     const a=aliens[i];a.wobble+=dt;
+    if(!a.boss&&(a.phase==='descend'||a.phase==='approach')){
+      let dodgeX=0;
+      for(const s of stones){const dx=a.x-s.x,dy=a.y-s.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<cfg.dodgeRadius&&s.vy<0){const force=(cfg.dodgeRadius-dist)/cfg.dodgeRadius;dodgeX+=(dx/(dist+1))*force;}}
+      if(dodgeX!==0){a.x+=dodgeX*cfg.dodgeSpeed*dt;a.x=Math.max(a.size,Math.min(W-a.size,a.x));}
+    }
     if(a.phase==='approach'){
       const dx=a.tx-a.x,dy=a.ty-a.y,dist=Math.sqrt(dx*dx+dy*dy);
       if(dist<5){a.phase='descend';}else{a.x+=(dx/dist)*a.speed*dt;a.y+=(dy/dist)*a.speed*dt*0.5;}
     }else if(a.phase==='descend'){
-      const dMult=a.descendSpeed||0.4;
-      a.y+=a.speed*dt*dMult;
-      if(a.boss){
-        if(a.y>=a.ty){a.y=a.ty;a.phase='attack';a.attackTimer=0;}
-      }else{
-        if(a.y>=H*0.65-a.size){a.y=H*0.65-a.size;a.phase='attack';a.beam=true;a.attackTimer=2.5+Math.random();}
-      }
+      a.y+=a.speed*dt*(a.descendSpeed||0.4);
+      if(a.boss){if(a.y>=a.ty){a.y=a.ty;a.phase='attack';a.beam=false;a.attackTimer=0;}}
+      else{if(a.y>=H*0.65-a.size){a.y=H*0.65-a.size;a.phase='attack';a.beam=true;a.attackTimer=Math.max(0.8,2.5-wave*0.1)+Math.random()*0.5;}}
     }else if(a.phase==='attack'){
       if(a.boss){
-        a.x+=Math.sin(a.wobble*0.7)*60*dt;a.x=Math.max(a.size,Math.min(W-a.size,a.x));
+        let bDodge=0;
+        for(const s of stones){const dx=a.x-s.x,dy=a.y-s.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<200){const force=(200-dist)/200;bDodge+=(dx/(dist+1))*force*2.5;}}
+        const drift=Math.sin(a.wobble*0.5)*40;
+        a.dodgeVx=a.dodgeVx*0.85+(bDodge*a.dodgeSpeed+drift)*0.15;
+        a.x+=a.dodgeVx*dt;a.x=Math.max(a.size,Math.min(W-a.size,a.x));
+        a.boltTimer-=dt;
+        if(a.boltTimer<=0){a.boltTimer=Math.max(1.0,3-wave*0.2);const count=wave>=10?3:wave>=7?2:1;for(let b=0;b<count;b++)spawnBossBolt(a.x+(b-(count-1)/2)*30,a.y+a.size);}
         a.droneTimer-=dt;
         if(a.droneTimer<=0){
-          a.droneTimer=Math.max(1.5,4-wave*0.2);
-          for(let d=0;d<2;d++){
-            aliens.push({x:a.x+(d===0?-50:50),y:a.y+20,tx:80+Math.random()*(W-160),ty:0,phase:'descend',speed:cfg.speed*1.2,descendSpeed:0.8,hp:1,maxHp:1,big:false,fast:true,boss:false,size:18,wobble:Math.random()*Math.PI*2,wobbleSpeed:2,color:'#cc44ff',score:50,attackTimer:0,beam:null});
-          }
+          a.droneTimer=Math.max(1.5,4-wave*0.25);
+          for(let d=0;d<2;d++){aliens.push({x:a.x+(d===0?-55:55),y:a.y+20,tx:80+Math.random()*(W-160),ty:0,phase:'descend',speed:cfg.speed*1.3,descendSpeed:1.0,hp:1,maxHp:1,big:false,fast:true,boss:false,size:18,wobble:Math.random()*Math.PI*2,wobbleSpeed:2,color:'#cc44ff',score:75,attackTimer:0,beam:null});}
           spawnParticles(a.x,a.y+30,'#cc44ff',8);
         }
       }else{
@@ -394,6 +359,12 @@ function update(dt,t){
         if(a.attackTimer<=0){trees--;treeDamageFlash=1;screenShake=0.5;updateHUD();spawnParticles(a.x,H*0.65,'#00ff44',20);spawnExplosion(a.x,H*0.65,60,'#00ff44');sfxTreeHit();a.beam=false;aliens.splice(i,1);waveKills++;if(trees<=0){gameOver();return;}}
       }
     }
+  }
+
+  for(let i=bossBolts.length-1;i>=0;i--){
+    const b=bossBolts[i];b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt*0.5;
+    if(b.y>H+20||b.life<=0){bossBolts.splice(i,1);continue;}
+    if(b.y>H-120&&Math.abs(b.x-squachX)<35){trees--;treeDamageFlash=1;screenShake=0.8;updateHUD();spawnParticles(b.x,H-80,'#cc44ff',16);spawnExplosion(b.x,H-80,50,'#cc44ff');sfxTreeHit();bossBolts.splice(i,1);if(trees<=0){gameOver();return;}}
   }
 
   for(let i=stones.length-1;i>=0;i--){
@@ -407,10 +378,8 @@ function update(dt,t){
         a.hp--;sfxHit();spawnParticles(s.x,s.y,a.color,a.big?20:12);
         if(a.hp<=0){
           sfxExplode();
-          if(a.boss){
-            for(let e=0;e<5;e++){setTimeout(()=>{spawnExplosion(a.x+(Math.random()-0.5)*80,a.y+(Math.random()-0.5)*40,90,'#cc44ff');spawnParticles(a.x+(Math.random()-0.5)*80,a.y,'#cc44ff',20);},e*120);}
-            screenShake=1.5;showWaveBanner('MOTHERSHIP DESTROYED!');
-          }else{spawnExplosion(a.x,a.y,a.big?70:45,a.color);spawnParticles(a.x,a.y,a.color,a.big?30:18);}
+          if(a.boss){for(let e=0;e<5;e++)setTimeout(()=>{spawnExplosion(a.x+(Math.random()-0.5)*80,a.y+(Math.random()-0.5)*40,90,'#cc44ff');spawnParticles(a.x+(Math.random()-0.5)*80,a.y,'#cc44ff',20);},e*120);screenShake=1.5;showWaveBanner('MOTHERSHIP DESTROYED!');}
+          else{spawnExplosion(a.x,a.y,a.big?70:45,a.color);spawnParticles(a.x,a.y,a.color,a.big?30:18);}
           score+=a.score;waveKills++;showScorePopup(a.x,a.y,a.score);aliens.splice(j,1);
         }
         stones.splice(i,1);hit=true;break;
@@ -431,6 +400,7 @@ function loop(timestamp){
   if(screenShake>0){const s=screenShake*8;ctx.translate((Math.random()-0.5)*s,(Math.random()-0.5)*s);}
   drawBackground(t);drawWaveProgress();
   explosions.forEach(drawExplosion);aliens.forEach(a=>drawAlien(a,t));
+  for(const b of bossBolts){ctx.save();ctx.globalAlpha=b.life;ctx.shadowBlur=20;ctx.shadowColor='#cc44ff';ctx.fillStyle='#ff44ff';ctx.beginPath();ctx.arc(b.x,b.y,b.size,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(b.x,b.y,b.size*0.4,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1;ctx.restore();}
   stones.forEach(drawStone);particles.forEach(drawParticle);drawSquach(t);
   ctx.restore();requestAnimationFrame(loop);
 }
@@ -464,7 +434,6 @@ function startMusic(){
 function stopMusic(){musicPlaying=false;clearTimeout(musicNodes.bassTimer);clearTimeout(musicNodes.arpTimer);clearTimeout(musicNodes.kickTimer);clearTimeout(musicNodes.hatTimer);if(musicNodes.master){try{musicNodes.master.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);}catch(e){}}musicNodes={};}
 function toggleMute(){if(musicPlaying){stopMusic();muteBtn.textContent='🔇';}else{startMusic();muteBtn.textContent='🔊';}}
 
-// ─── INIT ─────────────────────────────────────────────────────────────────
 document.getElementById('startBtn').onclick=startGame;
 document.getElementById('retryBtn').onclick=startGame;
 document.getElementById('nextWaveBtn').onclick=nextWave;
