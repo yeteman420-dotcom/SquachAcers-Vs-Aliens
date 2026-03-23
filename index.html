@@ -184,9 +184,9 @@ function popup(x,y,val){const el=document.createElement('div');el.className='pop
 function cx(clientX){return(clientX-canvas.getBoundingClientRect().left)*(W/canvas.getBoundingClientRect().width);}
 function cy(clientY){return(clientY-canvas.getBoundingClientRect().top)*(H/canvas.getBoundingClientRect().height);}
 
-canvas.addEventListener('touchstart',e=>{e.preventDefault();if(state!=='playing')return;targetX=Math.max(30,Math.min(W-30,cx(e.touches[0].clientX)));throwStone(cx(e.touches[0].clientX),cy(e.touches[0].clientY));},{passive:false});
-canvas.addEventListener('touchmove',e=>{e.preventDefault();if(state==='playing')targetX=Math.max(30,Math.min(W-30,cx(e.touches[0].clientX)));},{passive:false});
-canvas.addEventListener('mousemove',e=>{if(state==='playing')targetX=Math.max(30,Math.min(W-30,cx(e.clientX)));});
+canvas.addEventListener('touchstart',e=>{e.preventDefault();if(state!=='playing')return;targetX=Math.max(5,Math.min(W-5,cx(e.touches[0].clientX)));throwStone(cx(e.touches[0].clientX),cy(e.touches[0].clientY));},{passive:false});
+canvas.addEventListener('touchmove',e=>{e.preventDefault();if(state==='playing')targetX=Math.max(5,Math.min(W-5,cx(e.touches[0].clientX)));},{passive:false});
+canvas.addEventListener('mousemove',e=>{if(state==='playing')targetX=Math.max(5,Math.min(W-5,cx(e.clientX)));});
 canvas.addEventListener('click',e=>{if(state==='playing')throwStone(cx(e.clientX),cy(e.clientY));});
 
 function throwStone(tapX,tapY){
@@ -227,7 +227,9 @@ function drawSquach(t){
   ctx.fillStyle='#4a3522';ctx.beginPath();ctx.arc(0,-20,14,0,Math.PI*2);ctx.fill();
   ctx.shadowBlur=8;ctx.shadowColor='#FFD700';ctx.fillStyle='#FFD700';
   ctx.beginPath();ctx.arc(-5,-23,3,0,Math.PI*2);ctx.arc(5,-23,3,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
-  ctx.fillStyle='#3a2a1a';ctx.beginPath();ctx.ellipse(-22,4,10,6,0.3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(22,4,10,6,-0.3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#3a2a1a';
+  ctx.beginPath();ctx.ellipse(-22,4,10,6,0.3,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(22,4,10,6,-0.3,0,Math.PI*2);ctx.fill();
   ctx.restore();ctx.globalAlpha=1;
   for(let i=0;i<3;i++){ctx.globalAlpha=i<lives?1:0.15;ctx.font='13px sans-serif';ctx.fillText('❤',squachX-20+i*18,SY+46);}
   ctx.globalAlpha=1;
